@@ -1,0 +1,49 @@
+<head>
+  <title>Family Feud</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+
+<body>
+  {{>dispatcher}}
+</body>
+
+<template name="dispatcher">
+  {{#if path "/"}}
+    {{>game_display}}
+  {{/if}}
+  {{#if path "/control"}}
+    {{>controller}}
+  {{/if}}
+  {{#if path "/host"}}
+    {{>host}}
+  {{/if}}
+</template>
+
+<template name="game_display">
+  {{#if screen "logo"}}
+    {{>logo}}
+  {{/if}}
+  {{#if screen "board"}}
+    {{>answer_board}}
+  {{/if}}
+  {{#if screen "fast_money"}}
+    {{>fast_money}}
+  {{/if}}
+  {{#if screen "gameover"}}
+    {{>gameover}}
+  {{/if}}
+</template>
+
+<template name="logo">
+  {{#if question_set}}
+    {{play_theme}}
+  {{/if}}
+  <div class="logo">
+    <img src="/family-feud-logo.png" />
+  </div>
+</template>
+
+<template name="gameover">
+  GAME OVER
+</template>
+

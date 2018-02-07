@@ -1,0 +1,381 @@
+/* CSS declarations go here */
+@font-face{
+  font-family: "looksky";
+  src: local("Looksky Font"), url('/looksky.woff') format("woff");
+}
+
+@font-face{
+  font-family: "basicdots";
+  src: url('/basicdots.ttf') format("truetype");
+}
+
+@font-face{
+  font-family: "microextended-bold";
+  src: url('/microextended-bold.ttf') format("truetype");
+}
+
+.png-shadow {
+  img {
+    -webkit-filter: drop-shadow(10px 10px 5px rgba(0,0,0,0.8));
+  }
+}
+
+body {
+  //background-image: url(/bluebg.jpg);
+
+  div.logo {
+    text-align: center;
+    margin-top: 10%;
+
+    .png-shadow;
+  }
+
+  div.strike {
+    display: none;
+    position: absolute;
+    top: 20%;
+    width: 99%;
+    text-align: center;
+    .png-shadow;
+    img {
+      padding: 0 10px;
+    }
+  }
+}
+
+.typewriter-cursor {
+  color: red;
+  display: inline !important;
+  position: relative;
+  top: -3px;
+}
+
+.wrapper {
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 65%;
+}
+
+.cell {
+  display: table-cell;
+}
+
+.container {
+  width: 280px;
+  height: 2.5em;
+  position: relative;
+  margin: 0 auto 20px;
+  -webkit-perspective: 800px;
+     -moz-perspective: 800px;
+       -o-perspective: 800px;
+          perspective: 800px;
+}
+
+body {
+  background-color: #FFD33E;
+  //font-family: "Courier New", Courier, monospace;
+  font-family: microextended-bold;
+
+  #background {
+    background-color: #62B2A4;
+    background-image: -webkit-radial-gradient(white 23%, transparent 24%);
+    background-image: -moz-radial-gradient(white 23%, transparent 24%);
+    background-image: -o-radial-gradient(white 23%, transparent 24%);
+    background-image: radial-gradient(white 23%, transparent 24%);
+    background-size:20px 20px;
+    background-position: 0 0, 10px 10px;
+    -webkit-border-radius: 50%;
+       -moz-border-radius: 50%;
+         -o-border-radius: 50%;
+            border-radius: 50%;
+    border: 12px solid #C13237;
+    display: table;
+    height: 90%;
+    margin-right: auto;
+    margin-left: auto;
+    //min-width: 1024px;
+    min-height: 600px;
+    position: relative;
+    text-align: center;
+    width: 90%;
+    max-width: 1000px;
+
+    section {
+      display: block;
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    .answer {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      -webkit-transition: -webkit-transform 1s;
+         -moz-transition: -moz-transform 1s;
+           -o-transition: -o-transform 1s;
+              transition: transform 1s;
+      -webkit-transform-style: preserve-3d;
+         -moz-transform-style: preserve-3d;
+           -o-transform-style: preserve-3d;
+              transform-style: preserve-3d;
+    }
+
+    .answer.flipped {
+      -webkit-transform: rotateX( -180deg );
+         -moz-transform: rotateX( -180deg );
+           -o-transform: rotateX( -180deg );
+              transform: rotateX( -180deg );
+    }
+
+    .answer figure, .inactive, .factor .factor {
+      box-sizing: border-box;
+      display: block;
+      height: 100%;
+      width: 100%;
+      color: white;
+      line-height: 2.3em;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1em;
+      position: absolute;
+      -webkit-backface-visibility: hidden;
+         -moz-backface-visibility: hidden;
+           -o-backface-visibility: hidden;
+              backface-visibility: hidden;
+
+      .score {
+        line-height: 2em;
+      }
+    }
+
+    .answer .front, .inactive, .factor .factor {
+      background: #FFD33E;
+      border: 4px solid #C13237;
+      color: #C13237;
+      text-align: center;
+      outline: 2px solid #FFD33E;
+    }
+
+    .wrapper.factor {
+      margin-top: 0;
+
+      .container {
+        width: 605px;
+      }
+
+      .factor {
+        font-family: microextended-bold;
+        font-size: 30px;
+
+        span {
+          position: relative;
+          top: -17px;
+        }
+      }
+    }
+
+    .front span {
+      background-color: #C13237;
+      border: 2px solid #C13237;
+      -webkit-border-radius: 50%;
+         -moz-border-radius: 50%;
+           -o-border-radius: 50%;
+              border-radius: 50%;
+      color: white;
+      display: block;
+      font-weight: bold;
+      font-size: larger;
+      height: 1.9em;
+      margin-top: -4px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 3em;
+      line-height: 2em;
+    }
+
+    .answer .back {
+      padding-left: 5px;
+      text-align: left;
+      background: black;
+      -webkit-transform: rotateX( -180deg );
+         -moz-transform: rotateX( -180deg );
+           -o-transform: rotateX( -180deg );
+              transform: rotateX( -180deg );
+      outline: 2px solid black;
+      border: 2px solid white;
+    }
+
+
+    .footer {
+      background: black;
+      bottom: 0;
+      color: #CBFFF6;
+      left: 0;
+      line-height: 2em;
+      padding-left: 5px;
+      position: fixed;
+      text-align: left;
+      width:100%;
+    }
+
+    .score {
+      background: #C13237;
+      position: absolute;
+      right: 0.1em;
+      top: 0.1em;
+      width: 2em;
+      text-align: center;
+      font-family: "Courier New";
+    }
+
+
+    #rotating-answers {
+      //display: table-cell;
+      margin: auto;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    #pending-score, #score-team1, #score-team2 {
+      background-color: black;
+      border: #FFD33E solid 3px;
+      color: #f0f060;
+      font-family: "basicdots";
+      font-size: 90px;
+      height: 100px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 20px;
+      padding-top: 22px;
+      padding-right: 10px;
+      text-align: right;
+      width: 200px;
+    }
+
+    #score-team1, #score-team2 {
+      position: absolute;
+      top: 36%;
+      width: 220px;
+    }
+
+    #score-team1.control, #score-team2.control {
+      border: 10px solid #C13237;
+    }
+
+    #score-team1 {
+      left: -115px;
+    }
+    #score-team2 {
+      right: -115px;
+    }
+  }
+}
+
+body.fast-money {
+  background-color: black;
+
+  #fast-money {
+    color: white;
+    .wrapper {
+      background-color: Navy;
+      border: 3px outset #000099;
+      position: relative;
+      width: 820px;
+      padding-top: 20px;
+      padding-bottom: 40px;
+
+      .answer span {
+        position: relative;
+        left: -20px;
+      }
+      div.field {
+        //line-height: 40px;
+        display: inline-block;
+        border: 4px inset #000068;
+        background-color: #000033;
+        height: 30px;
+        font-size: 25px;
+        white-space: nowrap;
+        overflow: hidden;
+
+        span {
+          display: none;
+        }
+      }
+
+      div.cell {
+        text-align: left;
+      }
+
+      section {
+        width: 375px;
+      }
+      div.answer {
+        width: 300px;
+      }
+      div.score {
+        position: absolute;
+        right: 0;
+        text-align: center;
+        width: 55px;
+      }
+
+      div.total {
+        position: absolute;
+        right: 27px;
+        bottom: 10px;
+
+        span {
+          font-size: 30px;
+          //position: relative;
+          //top: -10px;
+        }
+        .total-score {
+          width: 75px;
+          text-align: right;
+          padding-right: 5px;
+        }
+      }
+    }
+  }
+}
+
+#controller {
+  h1 {
+    margin-bottom: 0;
+  }
+
+  button {
+    display: block;
+  }
+
+  table {
+    width: 100%;
+    margin-bottom: 1em;
+  }
+
+  #answers {
+    margin-top: 1em;
+    td.show-button {
+      text-align: right;
+    }
+
+  }
+
+  button {
+    font-size: 100%;
+  }
+
+  .choose-set button {
+    width: 100%;
+  }
+
+  #fm-reveal {
+    display: none;
+  }
+
+}

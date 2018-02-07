@@ -1,0 +1,112 @@
+<template name="controller">
+  <div id="controller">
+    {{#if question_set}}
+      {{#if screen "fast_money"}}
+        {{>fast_money_controller}}
+      {{else}}
+        {{>stat_summary}}
+        {{#if phaseIn "pregame" "reveal"}}
+          <button id="next-q" type="button">Next Question</button>
+        {{/if}}
+        {{#if screen "board"}}
+          {{#isolate}}
+            {{#if phase "faceoff"}}
+            <button id="cntl-team1" type="button">Team 1 to Play</button>
+            <button id="cntl-team2" type="button">Team 2 to Play</button>
+            {{/if}}
+          {{/isolate}}
+          {{#isolate}}
+            <button id="strike" type="button">
+              {{#if phase "faceoff"}}
+                Faceoff
+              {{/if}}
+              {{#if phase "play"}}
+                {{nth}}
+              {{/if}}
+              {{#if phase "steal"}}
+                Steal
+              {{/if}}
+              Strike!
+            </button>
+          {{/isolate}}
+          <hr>
+          {{question.question}}
+          <table id="answers">
+            <tbody>
+              {{#foreach question.answers}}
+              <tr>
+                <td>{{plus _index 1}}:</td>
+                <td>{{upper answer}}</td>
+                <td class="show-button">
+                  {{#isolate}}
+                  <button type="button" disabled={{flipped}}>Show</button>
+                  {{/isolate}}
+                </td>
+              </tr>
+              {{/foreach}}
+            </tbody>
+          </table>
+        {{/if}}
+      {{/if}}
+    {{else}}
+      <div class="choose-set">
+        Choose a question set:
+        {{#each all_question_sets}}
+          <button type="button">{{this}}</button>
+        {{/each}}
+      </div>
+    {{/if}}
+  </div>
+</template>
+
+<template name="stat_summary">
+  <h1>Scores:</h1>
+  <table id="scores">
+    <tbody>
+      <tr>
+        <td>Team 1: {{score_team1}}</td>
+        <td>Team 2: {{score_team2}}</td>
+      </tr>
+    </tbody>
+  </table>
+  {{#if phase "faceoff"}}
+  Faceoff!
+  {{/if}}
+  {{#if phase "play"}}
+    {{#if control "team1"}}
+    Team 1 is in control.
+    {{/if}}
+    {{#if control "team2"}}
+    Team 2 is in control.
+    {{/if}}
+  {{/if}}
+  {{#if phase "steal"}}
+    {{#if control "team1"}}
+    Team 1 has a chance to steal.
+    {{/if}}
+    {{#if control "team2"}}
+    Team 2 has a chance to steal.
+    {{/if}}
+  {{/if}}
+  {{#if phase "reveal"}}
+    {{#if control "team1"}}
+    Team 1 wins!
+    {{/if}}
+    {{#if control "team2"}}
+    Team 2 wins!
+    {{/if}}
+    <br/>Reveal the remaining answers.
+  {{/if}}
+</template>
+
+<template name="host">
+  {{#if screen "fast_money"}}
+    {{>fm_host}}
+  {{else}}
+    {{>stat_summary}}
+    <hr>
+    {{#isolate}}
+    {{question.question}}
+    {{/isolate}}
+  {{/if}}
+</template>

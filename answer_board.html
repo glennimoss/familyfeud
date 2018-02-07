@@ -1,0 +1,89 @@
+<template name="answer_board">
+  <div id="background">
+    {{#isolate}}
+    <div id="pending-score">{{pending_score}}</div>
+    {{/isolate}}
+    {{#isolate}}
+    <div id="score-team1" class={{#if control "team1"}}"control"{{/if}}>
+      {{score_team1}}
+    </div>
+    {{/isolate}}
+    {{#isolate}}
+    <div id="score-team2" class={{#if control "team2"}}"control"{{/if}}>
+      {{score_team2}}
+    </div>
+    {{/isolate}}
+    <br/>
+    <div id="rotating-answers">
+      <div class="wrapper">
+        <div class="cell">
+          {{#ntimes 5}}
+            {{let "_offset" 0}}
+            {{>answer_cell}}
+          {{/ntimes}}
+        </div>
+        <div class="cell">
+          {{#ntimes 5}}
+            {{let "_offset" 5}}
+            {{>answer_cell}}
+          {{/ntimes}}
+        </div>
+      </div>
+      {{#if neq question.factor 1}}
+        <div class="wrapper factor">
+          <div class="cell">
+            <section class="container">
+              <div class="factor">
+                <span>
+                {{#if eq question.factor 2}}
+                DOUBLE
+                {{/if}}
+
+                {{#if eq question.factor 3}}
+                TRIPLE
+                {{/if}}
+                </span>
+              </div>
+            </section>
+          </div>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+  {{>strikes}}
+  {{#isolate}}
+    {{animateFlips}}
+  {{/isolate}}
+  {{#isolate}}
+    {{playTheme}}
+  {{/isolate}}
+</template>
+
+<template name="answer_cell">
+  <section class="container">
+    {{#with thisAnswer}}
+      {{#if isActive}}
+      <div class="answer">
+        <figure class="front"><span>{{plus ../../_offset ../../_ord}}</span></figure>
+        <figure class="back">
+          {{upper answer}}
+          <span class="score">{{score}}</span>
+        </figure>
+      </div>
+      {{else}}
+      <div class="inactive"></div>
+      {{/if}}
+    {{/with}}
+  </section>
+</template>
+
+<template name="strikes">
+  {{#if showStrikes}}
+  {{play_strike}}
+  <div class="strike">
+    {{#ntimes numStrikes}}
+    <img src="/strike.png" />
+    {{/ntimes}}
+  </div>
+  {{/if}}
+</template>
