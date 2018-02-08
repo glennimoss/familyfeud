@@ -20,6 +20,9 @@
 </template>
 
 <template name="game_display">
+  <div id="reset">
+    <button onclick="Meteor.call('reset')">Reset Me</button>
+  </div>
   {{#if screen "logo"}}
     {{>logo}}
   {{/if}}

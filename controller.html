@@ -4,46 +4,41 @@
       {{#if screen "fast_money"}}
         {{>fast_money_controller}}
       {{else}}
+        else not fast money
         {{>stat_summary}}
         {{#if phaseIn "pregame" "reveal"}}
           <button id="next-q" type="button">Next Question</button>
         {{/if}}
         {{#if screen "board"}}
-          {{#isolate}}
+          {{#if phase "faceoff"}}
+          <button id="cntl-team1" type="button">Team 1 to Play</button>
+          <button id="cntl-team2" type="button">Team 2 to Play</button>
+          {{/if}}
+          <button id="strike" type="button">
             {{#if phase "faceoff"}}
-            <button id="cntl-team1" type="button">Team 1 to Play</button>
-            <button id="cntl-team2" type="button">Team 2 to Play</button>
+              Faceoff
             {{/if}}
-          {{/isolate}}
-          {{#isolate}}
-            <button id="strike" type="button">
-              {{#if phase "faceoff"}}
-                Faceoff
-              {{/if}}
-              {{#if phase "play"}}
-                {{nth}}
-              {{/if}}
-              {{#if phase "steal"}}
-                Steal
-              {{/if}}
-              Strike!
-            </button>
-          {{/isolate}}
+            {{#if phase "play"}}
+              {{nth}}
+            {{/if}}
+            {{#if phase "steal"}}
+              Steal
+            {{/if}}
+            Strike!
+          </button>
           <hr>
           {{question.question}}
           <table id="answers">
             <tbody>
-              {{#foreach question.answers}}
+              {{#each question.answers}}
               <tr>
-                <td>{{plus _index 1}}:</td>
+                <td>{{@index}} {{plus index 1}}:</td>
                 <td>{{upper answer}}</td>
                 <td class="show-button">
-                  {{#isolate}}
                   <button type="button" disabled={{flipped}}>Show</button>
-                  {{/isolate}}
                 </td>
               </tr>
-              {{/foreach}}
+              {{/each}}
             </tbody>
           </table>
         {{/if}}
@@ -105,8 +100,6 @@
   {{else}}
     {{>stat_summary}}
     <hr>
-    {{#isolate}}
     {{question.question}}
-    {{/isolate}}
   {{/if}}
 </template>

@@ -36,8 +36,10 @@ Handlebars.registerHelper("neq", function (v1, v2) {
 
 
 Handlebars.registerHelper("ntimes", function (times, options) {
+  console.log("called ntimes");
   var out = ""
     , offset = this._offset || 0;
+  debugger;
   for (var i=0; i < times; i++) {
     out += Spark.labelBranch("ntimes" + i, function () {
       return options.fn({_index: offset + i, _ord: offset + i + 1});

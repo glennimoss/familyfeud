@@ -24,7 +24,7 @@ Template.answer_board.score_team2 = getState('score_team2');
 Template.answer_board.control = ifState('control');
 
 Template.answer_cell.thisAnswer = getState('question', function (question) {
-  var idx = this._offset + this._index;
+  var idx = this.ord - 1; //this._offset + this._index;
   if (idx < question.answers.length) {
     return _.extend({isActive: true}, question.answers[idx]);
   } else {
