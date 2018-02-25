@@ -1,21 +1,8 @@
+import { State, getState, set_state } from '/imports/state.js';
+
 var snd_blip = new Audio('/ff-blip.wav')
   , snd_bell = new Audio('/ff-bell.wav')
   , snd_zero = new Audio('/ff-zero.wav');
-
-Template.fast_money.set_bg = function () {
-  $('body').addClass('fast-money');
-}
-
-Template.fast_money.fm_total_score = getState('fm_total_score');
-
-Template.fm_cell.thisAnswer = getState('question', function (question) {
-  var idx = this._offset + this._index;
-  if (idx < question.answers.length) {
-    return _.extend({isActive: true}, question.answers[idx]);
-  } else {
-    return {isActive: false};
-  }
-});
 
 var currentAns = 0;
 Template.fast_money.animateAnswers = getState('fm_answer',
@@ -25,11 +12,11 @@ Template.fast_money.animateAnswers = getState('fm_answer',
     }
 
     if (fm_answer == 'hide') {
-      $('.cell:eq(0) .field span').hide();
+      $('.container:lt(5) .field span').hide();
       return
     }
     if (fm_answer == 'show') {
-      $('.cell:eq(0) .field span').show();
+      $('.container:lt(5) .field span').show();
       return
     }
 
@@ -52,10 +39,16 @@ Template.fast_money.animateAnswers = getState('fm_answer',
 var fm_ans = null
   , fm_ans_pos = 0
   , times_around = 0;
-Template.fast_money_controller.all_questions = getState('all_questions');
+
+const helpers = {
+  all_questions: getState('all_questions'),
+};
+Template.fast_money_controller.helpers(helpers);
+Template.fm_host.helpers(helpers);
+
 Template.fast_money_controller.events({
   'click #fm-done': function () {
-    var form = $('#fast_money').serializeArray();
+    var form = $('#fast-money').serializeArray();
 
     fm_ans = [];
     for (var i = 0; i < form.length; i += 2) {
@@ -65,6 +58,7 @@ Template.fast_money_controller.events({
         fm_ans.push(form[i+1].value || " ");
       }
     }
+    $("#fm-done").hide();
     $("#fm-reveal").show();
   },
   'click #fm-reveal': function () {
@@ -84,10 +78,11 @@ Template.fast_money_controller.events({
       fm_ans_pos = 0;
 
       set_state({fm_answer: 'hide'});
-      $('#fast_money :checked[value!=-1]').attr('disabled', 'true');
-      $('#fast_money')[0].reset();
+      $('#fast-money :checked[value!=-1]').attr('disabled', 'true');
+      $('#fast-money')[0].reset();
 
       $('#fm-reveal').text('Show answers').hide();
+      $("#fm-done").show();
 
       times_around += 1;
 
@@ -115,4 +110,3 @@ Template.fast_money_controller.events({
   },
 });
 
-Template.fm_host.all_questions = getState('all_questions');

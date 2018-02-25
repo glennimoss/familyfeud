@@ -1,26 +1,30 @@
+import { Answers, State, getState, set_state } from '/imports/state.js';
+
+Template.controller.answers = function () {
+  console.log("called controller answers");
+  const c = Answers.find({}, {sort: ["_id"]});
+  console.log(c.fetch());
+  return c;
+}
 Template.controller.all_question_sets = getState('all_question_sets');
 Template.controller.question_set = getState('question_set');
 
 Template.controller.score_team1 = getState('score_team1');
 Template.controller.score_team2 = getState('score_team2');
 
-Template.controller.screen = ifState('screen');
-Template.controller.control = ifState('control');
-Template.controller.phase = ifState("phase");
 Template.controller.phaseIn = getState("phase", function (phase) {
   return _.values(arguments).slice(1, -1).indexOf(phase) != -1;
 });
 Template.controller.question = getState('question');
 
 
-Template.stat_summary.phase = ifState("phase");
-Template.stat_summary.control = ifState('control');
 Template.stat_summary.score_team1 = getState('score_team1');
 Template.stat_summary.score_team2 = getState('score_team2');
 
 Template.host.question = getState('question');
 
 var hideStrikes = function () {
+  console.log("hideStrikes");
   set_state({showStrikes: false})
   if (getState('numStrikes')() == 3) {
     set_state({
@@ -54,7 +58,7 @@ Template.controller.events({
       , state = {question_set: set_name};
 
     if (set_name.search('Fast Money') == 0) {
-      state.screen = 'fast_money';
+      state.screen = 'fast-money';
     }
 
     set_state(state);
@@ -73,8 +77,12 @@ Template.controller.events({
     });
   },
   'click #strike': function () {
+    Meteor.call("strike");
+
+    console.log("click strike");
     var numStrikes = State.findOne('numStrikes').value
       , showStrikes = State.findOne('showStrikes').value;
+    console.log("click strike", numStrikes, showStrikes);
 
     if (!showStrikes) {
       if (State.findOne('phase').value == 'play') {
@@ -90,12 +98,16 @@ Template.controller.events({
     }
   },
   'click td.show-button button': function (event) {
-    var $tgt = $(event.currentTarget)
+    let $tgt = $(event.currentTarget)
       , idx = $tgt.parents('tr').index()
       , flipped = {};
 
+    //Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
+    Meteor.call("flip", idx);
+      /*
     flipped['value.' + idx] = true;
     State.update('flipped', {$set: flipped});
+    */
 
     var phase = getState('phase')();
     if (phase != 'reveal') {
@@ -114,11 +126,20 @@ Template.controller.events({
   },
 });
 
-Template.controller.flipped = getState('flipped', function (flipped) {
-  return flipped[this._index];
+/*
+Template.controller.flipped = getState('flipped', function (flipped, index) {
+  return flipped[index];
 });
+*/
 
 var _with_suffix = ['1st', '2nd', '3rd'];
 Template.controller.nth = getState('numStrikes', function (num) {
   return _with_suffix[num];
+});
+
+Template.controller.numStrikes = getState('numStrikes', function (numStrikes) {
+  if (getState('phase')() != 'play') {
+    numStrikes = 1;
+  }
+  return new Array(numStrikes).fill(1);
 });

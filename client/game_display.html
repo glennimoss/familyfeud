@@ -1,0 +1,32 @@
+<template name="game_display">
+  <div id="fakebody" class="{{state "screen"}}">
+    <div id="reset">
+      <button onclick="Meteor.call('reset')">Reset Me</button>
+    </div>
+    {{#if eq (state "screen") "logo"}}
+      {{>logo}}
+    {{/if}}
+    {{#if eq (state "screen") "board"}}
+      {{>answer_board}}
+    {{/if}}
+    {{#if eq (state "screen") "fast-money"}}
+      {{>fast_money}}
+    {{/if}}
+    {{#if eq (state "screen") "gameover"}}
+      {{>gameover}}
+    {{/if}}
+  </div>
+</template>
+
+<template name="logo">
+  {{#if question_set}}
+    {{play_theme}}
+  {{/if}}
+  <div class="logo">
+    <img src="/family-feud-logo.png" />
+  </div>
+</template>
+
+<template name="gameover">
+  GAME OVER
+</template>

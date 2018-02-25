@@ -1,27 +1,28 @@
 <template name="controller">
+  <div id="testbed" style="font-size: 20px; width: 0px;"></div>
   <div id="controller">
     {{#if question_set}}
-      {{#if screen "fast_money"}}
+      {{#if eq (state "screen") "fast-money"}}
         {{>fast_money_controller}}
       {{else}}
-        else not fast money
         {{>stat_summary}}
+        <button id="next-q" type="button">Next Question</button>
         {{#if phaseIn "pregame" "reveal"}}
           <button id="next-q" type="button">Next Question</button>
         {{/if}}
-        {{#if screen "board"}}
-          {{#if phase "faceoff"}}
+        {{#if eq (state "screen") "board"}}
+          {{#if eq (state "phase") "faceoff"}}
           <button id="cntl-team1" type="button">Team 1 to Play</button>
           <button id="cntl-team2" type="button">Team 2 to Play</button>
           {{/if}}
           <button id="strike" type="button">
-            {{#if phase "faceoff"}}
+            {{#if eq (state "phase") "faceoff"}}
               Faceoff
             {{/if}}
-            {{#if phase "play"}}
+            {{#if eq (state "phase") "play"}}
               {{nth}}
             {{/if}}
-            {{#if phase "steal"}}
+            {{#if eq (state "phase") "steal"}}
               Steal
             {{/if}}
             Strike!
@@ -30,12 +31,12 @@
           {{question.question}}
           <table id="answers">
             <tbody>
-              {{#each question.answers}}
+              {{#each ans in question.answers}}
               <tr>
-                <td>{{@index}} {{plus index 1}}:</td>
-                <td>{{upper answer}}</td>
+                <td>{{plus @index 1}}:</td>
+                <td>{{upper ans.answer}}</td>
                 <td class="show-button">
-                  <button type="button" disabled={{flipped}}>Show</button>
+                  <button type="button" disabled={{eq ans.flipside "side2"}}>Show</button>
                 </td>
               </tr>
               {{/each}}
@@ -64,30 +65,30 @@
       </tr>
     </tbody>
   </table>
-  {{#if phase "faceoff"}}
+  {{#if eq (state "phase") "faceoff"}}
   Faceoff!
   {{/if}}
-  {{#if phase "play"}}
-    {{#if control "team1"}}
+  {{#if eq (state "phase") "play"}}
+    {{#if eq (state "control") "team1"}}
     Team 1 is in control.
     {{/if}}
-    {{#if control "team2"}}
+    {{#if eq (state "control") "team2"}}
     Team 2 is in control.
     {{/if}}
   {{/if}}
-  {{#if phase "steal"}}
-    {{#if control "team1"}}
+  {{#if eq (state "phase") "steal"}}
+    {{#if eq (state "control") "team1"}}
     Team 1 has a chance to steal.
     {{/if}}
-    {{#if control "team2"}}
+    {{#if eq (state "control") "team2"}}
     Team 2 has a chance to steal.
     {{/if}}
   {{/if}}
-  {{#if phase "reveal"}}
-    {{#if control "team1"}}
+  {{#if eq (state "phase") "reveal"}}
+    {{#if eq (state "control") "team1"}}
     Team 1 wins!
     {{/if}}
-    {{#if control "team2"}}
+    {{#if eq (state "control") "team2"}}
     Team 2 wins!
     {{/if}}
     <br/>Reveal the remaining answers.
@@ -95,7 +96,7 @@
 </template>
 
 <template name="host">
-  {{#if screen "fast_money"}}
+  {{#if eq (state "screen") "fast-money"}}
     {{>fm_host}}
   {{else}}
     {{>stat_summary}}

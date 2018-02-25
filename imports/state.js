@@ -1,6 +1,8 @@
-State = new Meteor.Collection("state");
+export const State = new Meteor.Collection("state");
 
-this.getState = function (key, fn) {
+export const Answers = new Meteor.Collection("answers");
+
+export function getState (key, fn) {
   return function () {
     var obj = State.findOne(key);
     if (obj) {
@@ -12,13 +14,7 @@ this.getState = function (key, fn) {
   }
 }
 
-this.ifState = function (key) {
-  return this.getState(key, function (curval, testval) {
-    return curval == testval;
-  });
-}
-
-this.set_state = function (keys, val) {
+export function set_state (keys, val) {
   if (!_.isObject(keys)) {
     var obj = {};
     obj[keys] = val;

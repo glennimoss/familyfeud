@@ -1,0 +1,120 @@
+<template name="answer_board">
+  <div id="background">
+    <div class="lights">
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row left"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+      <div class="row right"></div>
+    </div>
+    <div id="pending-score" class="score-border">
+      <div class="blinker AA"></div>
+      <div class="blinker BB"></div>
+      <div class="blinker CC"></div>
+      <div class="blinker DD"></div>
+      <div class="score-box"><span>{{state "pending_score"}}</span></div>
+      <div class="top border"></div>
+    </div>
+    <div id="score-team1" class="score-border {{#if eq (state "control") "team1"}}blink{{/if}}">
+      <div class="blinker AA"></div>
+      <div class="blinker BB"></div>
+      <div class="blinker CC"></div>
+      <div class="blinker DD"></div>
+      <div class="left border"></div>
+      <div class="score-box">
+        {{state "score_team1"}}
+      </div>
+    </div>
+    <div id="score-team2" class="score-border {{#if eq (state "control") "team2"}}blink{{/if}}">
+      <div class="blinker AA"></div>
+      <div class="blinker BB"></div>
+      <div class="blinker CC"></div>
+      <div class="blinker DD"></div>
+
+      <div class="score-box">
+        {{state "score_team2"}}
+      </div>
+      <div class="right border"></div>
+    </div>
+    <br/>
+    <div id="rotating-answers">
+      {{#each ans in answers}}
+        <div class="container answer {{ans.flipside}}">
+          <div class="plate yellow side1"><div class="ord">{{ans.ord}}</div></div>
+          <div class="plate black side2">
+            <div id="{{ans._id}}" class="ans-text">{{upper ans.answer}}</div>
+            <div class="score">{{ans.score}}</div>
+          </div>
+          <div class="plate yellow side3"></div>
+        </div>
+      {{/each}}
+      {{#if scoreFactor}}
+        <div class="container answer factor">
+          <div class="plate yellow">
+            {{scoreFactor}}
+          </div>
+        </div>
+      {{/if}}
+    </div>
+    <div></div>
+    <div></div>
+  </div>
+  {{>strikes}}
+  {{playTheme}}
+</template>
+
+<template name="strikes">
+  <div class="strike">
+    {{#if showStrikes}}
+      {{play_strike}}
+      {{#each numStrikes}}
+        <img src="/strike.png" />
+      {{/each}}
+    {{/if}}
+  </div>
+</template>

@@ -1,66 +1,76 @@
-var snd_correct = new Audio('/ff-clang-full.mp3')
-  , snd_no1_answer = new Audio('/ff-no1-answer-loud.mp3')
-  , snd_strike = new Audio('/ff-strike-alt.mp3')
-  , snd_theme = new Audio('/ff-commercial-break.mp3')
-  ;
+import { State, Answers, getState } from '/imports/state.js';
 
+const snd_correct = new Audio('/ff-clang-full.mp3')
+    , snd_no1_answer = new Audio('/ff-no1-answer-loud.mp3')
+    , snd_strike = new Audio('/ff-strike-alt.mp2')
+    , snd_theme = new Audio('/ff-commercial-break.mp3')
+    ;
 
- /*
-Template.answer_board.isFlipped = function () {
-  var flipped = Deps.nonreactive(getState('flipped'));
-
-  if (flipped[this._index]) {
-    return " flipped";
-  }
-  flipped[this._index] = true;
-}
-*/
-
-Template.answer_board.question = getState('question');
-
-Template.answer_board.pending_score = getState('pending_score');
-Template.answer_board.score_team1 = getState('score_team1');
-Template.answer_board.score_team2 = getState('score_team2');
-Template.answer_board.control = ifState('control');
-
-Template.answer_cell.thisAnswer = getState('question', function (question) {
-  var idx = this.ord - 1; //this._offset + this._index;
-  if (idx < question.answers.length) {
-    return _.extend({isActive: true}, question.answers[idx]);
-  } else {
-    return {isActive: false};
-  }
-});
-
-Template.answer_board.animateFlips = getState('flipped', function (flipped) {
-  $('.answer').each(function (idx, node) {
-    if (flipped[idx] && !node.classList.contains('flipped')) {
-      (idx == 0 ? snd_no1_answer : snd_correct).play();
-      node.classList.add('flipped');
-    } else if (!flipped[idx]) {
-      node.classList.remove('flipped');
+Template.answer_board.onCreated(function () {
+  State.find("phase").observeChanges({
+    changed (id, changes) {
+      debug
+      if (changes.value == "reveal") {
+        snd_theme.play();
+      }
     }
   });
 });
 
-Template.answer_board.playTheme = getState('phase', function (phase) {
-  if (phase == 'reveal') {
-    snd_theme.play();
-  }
+Template.answer_board.onRendered(function () {
+  $(".lights .row").each(function (idx, e) {
+    const delay = Math.max(idx-26, 25-idx, 0)*10;
+    e.style.animationDelay = `${delay}ms`;
+  });
+
+  $(".ans-text").each(function (idx, targetNode) {
+    scaleText(targetNode);
+
+    // Callback function to execute when mutations are observed
+    var callback = function(mutationsList) {
+      scaleText(targetNode);
+    };
+
+    // Create an observer instance linked to the callback function
+    var observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, { childList: true });
+  });
 });
 
-Template.strikes.showStrikes = getState('showStrikes');
-
-Template.strikes.numStrikes = getState('numStrikes', function (numStrikes) {
-  if (getState('phase')() != 'play') {
-    return 1;
-  }
-  return numStrikes;
-});
-
-Template.strikes.play_strike = function () {
-  snd_strike.play();
-  $('.strike').show();
+function getQuestion () {
+  return State.findOne("question").value;
 }
+
+Template.answer_board.helpers({
+  answers: function () {
+    return Answers.find({}, {sort: ["_id"]});
+  },
+  question: getQuestion,
+  scoreFactor: function () {
+    const question = getQuestion();
+    if (question.factor == 2) {
+      return "DOUBLE";
+    } else if (question.factor == 3) {
+      return "TRIPLE";
+    }
+  },
+});
+
+Template.strikes.helpers({
+  showStrikes: getState('showStrikes'),
+  numStrikes:  getState('numStrikes', function (numStrikes) {
+    if (getState('phase')() != 'play') {
+      numStrikes = 1;
+    }
+    return new Array(numStrikes).fill(1);
+  }),
+  play_strike () {
+    snd_strike.play();
+    $('.strike').show();
+  },
+});
+
 
 

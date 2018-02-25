@@ -1,8 +1,13 @@
+import { Answers, State, set_state } from '/imports/state.js';
+import { questionsets } from '/imports/canadian_questions.js';
+import { Events } from '/imports/events.js';
+import _get from 'lodash.get';
+
 var freshBoard = {
   phase: "faceoff",
   showStrikes: false,
   numStrikes: 0,
-  flipped: [],
+  //flipped: [],
   question: {
     question: "",
     factor: 1,
@@ -27,11 +32,22 @@ var freshState = _.extend({}, freshBoard, {
 
 var reset = function () {
   State.remove({})
+  Answers.remove({});
 
   for (var key in freshState) {
     State.insert({
       _id: key,
       value: freshState[key],
+    });
+  }
+
+  for (let i=0; i<10; i++) {
+    Answers.insert({
+      _id: `a${i}`,
+      ord: i + 1,
+      answer: "",
+      flipside: "side3",
+      score: 0,
     });
   }
 }
@@ -41,6 +57,9 @@ Meteor.methods({
     return _.keys(questionsets);
   },
   next_question: function () {
+    console.log("next_question called.");
+    Events.emit("testev", "this is a next_question event?");
+    console.log("Event emitted??");
     var q_num = State.findOne('q_num').value
       , question_set = State.findOne('question_set').value
       , questions = questionsets[question_set] || []
@@ -49,27 +68,92 @@ Meteor.methods({
       var state = _.extend({}, freshBoard, {
         screen: "board",
         question: questions[q_num],
-        flipped: _.times(questions[q_num].answers.length, function () {}),
+        //flipped: _.times(questions[q_num].answers.length, function () {}),
       });
       set_state(state);
       State.update('q_num', {$inc: {value: 1}});
+
+      for (let idx=0; idx<10; idx++) {
+        Answers.update({ _id: "a" + idx },
+                       {$set: {
+                         //answer: ans.answer,
+                         flipside: idx<state.question.answers.length ? "side1" : "side3",
+                         //score: ans.score,
+                       }});
+      }
+
+      Meteor.setTimeout(() => {
+        for (let idx=0; idx<10; idx++) {
+          const ans = state.question.answers[idx];
+          Answers.update({ _id: "a" + idx },
+                         {$set: {
+                           answer: _get(ans, "answer", ""),
+                           score: _get(ans, "score", 0),
+                         }});
+        }
+      }, 500);
     } else {
       reset();
     }
+  },
+  strike: function () {
+    console.log("Strike!");
   },
   get_all_questions: function () {
     set_state({all_questions: questionsets[State.findOne('question_set').value]});
   },
   reset: reset,
+  flip: function (idx) {
+    const a = Answers.findOne({_id: `a${idx}`});
+    let newside = "side2";
+    if (a.flipside == "side2") {
+      newside = "side3";
+    } else if (a.flipside == "side3") {
+      newside = "side1";
+    }
+
+    Answers.update({_id: `a${idx}`}, {$set: {flipside: newside}});
+    /*
+    if (a.flipside == "side1") {
+      Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
+    }
+    */
+  },
 });
 
+function* question2yaml (q) {
+  yield `${q.question}:`;
+  yield `  factor: ${q.factor}`;
+  yield `  answers:`;
+  for (let a of q.answers) {
+    yield `    ${a.answer}: ${a.score}`;
+  }
+}
+
 Meteor.startup(function () {
+  Events.allowRead('all');
+  Events.allowWrite('all');
+
+  /*
+  for (let setname in questionsets) {
+    console.log(`${setname}:`)
+    for (let i=0; i<questionsets[setname].length; i++) {
+      for (let line of question2yaml(questionsets[setname][i])) {
+        console.log(`  ${line}`);
+      }
+    }
+  }
+  */
+
   reset();
 
   Meteor.publish("state", function () {
     return State.find();
   });
 
+  Meteor.publish("answers", function () {
+    return Answers.find();
+  });
 
   /* To randomize questions into manageable sets...
 
