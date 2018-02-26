@@ -1,46 +1,35 @@
-import { Answers, State, getState, set_state } from '/imports/state.js';
+import { Answers, State, getState, set_state, Helpers } from '/imports/state.js';
 
-Template.controller.answers = function () {
-  console.log("called controller answers");
-  const c = Answers.find({}, {sort: ["_id"]});
-  console.log(c.fetch());
-  return c;
-}
-Template.controller.all_question_sets = getState('all_question_sets');
-Template.controller.question_set = getState('question_set');
-
-Template.controller.score_team1 = getState('score_team1');
-Template.controller.score_team2 = getState('score_team2');
-
-Template.controller.phaseIn = getState("phase", function (phase) {
-  return _.values(arguments).slice(1, -1).indexOf(phase) != -1;
+const _with_suffix = ['1st', '2nd', '3rd'];
+Template.controller.helpers({
+  answers: Helpers.answers,
+  nth: function () {
+    return _with_suffix[getState("numStrikes")];
+  },
+  phaseIn: function () {
+    const phase = getState("phase");
+    return _.values(arguments).slice(1, -1).indexOf(phase) != -1;
+  },
 });
-Template.controller.question = getState('question');
-
-
-Template.stat_summary.score_team1 = getState('score_team1');
-Template.stat_summary.score_team2 = getState('score_team2');
-
-Template.host.question = getState('question');
 
 var hideStrikes = function () {
   console.log("hideStrikes");
   set_state({showStrikes: false})
-  if (getState('numStrikes')() == 3) {
+  if (getState('numStrikes') == 3) {
     set_state({
       numStrikes: 0,
       phase: 'steal'
     });
     invertControl();
-  } else if (getState('phase')() == 'steal') {
+  } else if (getState('phase') == 'steal') {
     invertControl();
     win();
   }
 }
 
 var win = function () {
-  var team = getState('control')();
-  State.update('score_' + team, {$inc: {value: getState('pending_score')()}});
+  var team = getState('control');
+  State.update(`score_${team}`, {$inc: {value: getState('pending_score')}});
   set_state({
     pending_score: "",
     phase: "reveal",
@@ -48,8 +37,7 @@ var win = function () {
 }
 
 var invertControl = function () {
-  var cntl = State.findOne('control').value;
-  set_state({control:(cntl == 'team1' ? 'team2' : 'team1')});;
+  set_state({control:(getState('control') == 'team1' ? 'team2' : 'team1')});;
 }
 
 Template.controller.events({
@@ -80,12 +68,13 @@ Template.controller.events({
     Meteor.call("strike");
 
     console.log("click strike");
-    var numStrikes = State.findOne('numStrikes').value
-      , showStrikes = State.findOne('showStrikes').value;
+    let numStrikes = getState('numStrikes')
+      , showStrikes = getState('showStrikes')
+      ;
     console.log("click strike", numStrikes, showStrikes);
 
     if (!showStrikes) {
-      if (State.findOne('phase').value == 'play') {
+      if (getState('phase') == 'play') {
         numStrikes += 1;
       }
 
@@ -98,24 +87,14 @@ Template.controller.events({
     }
   },
   'click td.show-button button': function (event) {
-    let $tgt = $(event.currentTarget)
-      , idx = $tgt.parents('tr').index()
-      , flipped = {};
+    const $tgt = $(event.currentTarget)
+        , idx = $tgt.parents('tr').index()
+        ;
 
     //Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
     Meteor.call("flip", idx);
-      /*
-    flipped['value.' + idx] = true;
-    State.update('flipped', {$set: flipped});
-    */
 
-    var phase = getState('phase')();
-    if (phase != 'reveal') {
-      var question = Template.controller.question();
-      State.update('pending_score', {$inc:
-        {value: question.answers[idx].score * question.factor}});
-    }
-
+    var phase = getState('phase');
     if ((phase == 'play' && _.all(getState('flipped')())) ||
         phase == 'steal') {
       win();
@@ -124,22 +103,4 @@ Template.controller.events({
   'click #next-q': function (event) {
     Meteor.call('next_question');
   },
-});
-
-/*
-Template.controller.flipped = getState('flipped', function (flipped, index) {
-  return flipped[index];
-});
-*/
-
-var _with_suffix = ['1st', '2nd', '3rd'];
-Template.controller.nth = getState('numStrikes', function (num) {
-  return _with_suffix[num];
-});
-
-Template.controller.numStrikes = getState('numStrikes', function (numStrikes) {
-  if (getState('phase')() != 'play') {
-    numStrikes = 1;
-  }
-  return new Array(numStrikes).fill(1);
 });

@@ -1,11 +1,6 @@
 import { State, getState } from '/imports/state.js';
 
-Template.registerHelper('state', function (key) {
-  var obj = State.findOne(key);
-  if (obj) {
-    return obj.value;
-  }
-});
+Template.registerHelper('state', getState);
 
 Template.registerHelper('range', function (n, m) {
   if (typeof m != 'number') {

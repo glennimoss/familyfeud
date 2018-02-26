@@ -1,11 +1,16 @@
 <template name="controller">
   <div id="testbed" style="font-size: 20px; width: 0px;"></div>
   <div id="controller">
-    {{#if question_set}}
+    {{#if (state "question_set")}}
       {{#if eq (state "screen") "fast-money"}}
         {{>fast_money_controller}}
       {{else}}
         {{>stat_summary}}
+        <hr>
+        {{#let question=(state "question")}}
+        {{question.question}}
+        {{#unless host}}
+        <hr>
         <button id="next-q" type="button">Next Question</button>
         {{#if phaseIn "pregame" "reveal"}}
           <button id="next-q" type="button">Next Question</button>
@@ -27,28 +32,30 @@
             {{/if}}
             Strike!
           </button>
-          <hr>
-          {{question.question}}
           <table id="answers">
             <tbody>
-              {{#each ans in question.answers}}
-              <tr>
-                <td>{{plus @index 1}}:</td>
-                <td>{{upper ans.answer}}</td>
-                <td class="show-button">
-                  <button type="button" disabled={{eq ans.flipside "side2"}}>Show</button>
-                </td>
-              </tr>
+              {{#each ans in answers}}
+                {{#if ans.answer}}
+                <tr>
+                  <td>{{ans.ord}}:</td>
+                  <td>{{upper ans.answer}}</td>
+                  <td class="show-button">
+                    <button type="button" disabled={{eq ans.flipside "side2"}}>Show</button>
+                  </td>
+                </tr>
+                {{/if}}
               {{/each}}
             </tbody>
           </table>
         {{/if}}
+        {{/unless}}
+        {{/let}}
       {{/if}}
     {{else}}
       <div class="choose-set">
         Choose a question set:
-        {{#each all_question_sets}}
-          <button type="button">{{this}}</button>
+        {{#each qset in (state "all_question_sets")}}
+          <button type="button">{{qset}}</button>
         {{/each}}
       </div>
     {{/if}}
@@ -60,8 +67,8 @@
   <table id="scores">
     <tbody>
       <tr>
-        <td>Team 1: {{score_team1}}</td>
-        <td>Team 2: {{score_team2}}</td>
+        <td>Team 1: {{state "score_team1"}}</td>
+        <td>Team 2: {{state "score_team2"}}</td>
       </tr>
     </tbody>
   </table>
@@ -92,15 +99,5 @@
     Team 2 wins!
     {{/if}}
     <br/>Reveal the remaining answers.
-  {{/if}}
-</template>
-
-<template name="host">
-  {{#if eq (state "screen") "fast-money"}}
-    {{>fm_host}}
-  {{else}}
-    {{>stat_summary}}
-    <hr>
-    {{question.question}}
   {{/if}}
 </template>

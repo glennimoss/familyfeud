@@ -12,9 +12,9 @@
     {{>game_display}}
   {{/if}}
   {{#if path "/control"}}
-    {{>controller}}
+    {{>controller host=false}}
   {{/if}}
   {{#if path "/host"}}
-    {{>host}}
+    {{>controller host=true}}
   {{/if}}
 </template>

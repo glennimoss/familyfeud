@@ -1,8 +1,14 @@
 export const State = new Meteor.Collection("state");
 
-export const Answers = new Meteor.Collection("answers");
+export function getState (key) {
+  var obj = State.findOne(key);
+  if (obj) {
+    return obj.value;
+  }
+};
 
-export function getState (key, fn) {
+/*
+getState (key, fn) {
   return function () {
     var obj = State.findOne(key);
     if (obj) {
@@ -13,6 +19,7 @@ export function getState (key, fn) {
     }
   }
 }
+*/
 
 export function set_state (keys, val) {
   if (!_.isObject(keys)) {
@@ -25,3 +32,11 @@ export function set_state (keys, val) {
     State.update(key, {value: keys[key]});
   }
 }
+
+export const Answers = new Meteor.Collection("answers");
+
+export const Helpers = {
+  answers () {
+    return Answers.find({}, {sort: ["_id"]});
+  },
+};

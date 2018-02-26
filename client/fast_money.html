@@ -29,6 +29,7 @@
   {{#each q in (state "all_questions")}}
     <hr>
     {{q.question}}<br/>
+    {{#unless host}}
     {{#let parent_idx=@index}}
     {{#each ans in q.answers}}
     <input id="q{{parent_idx}}_{{@index}}" name="q{{parent_idx}}" value="{{@index}}" type="radio">
@@ -37,17 +38,11 @@
     {{/let}}
     <input id="q{{@index}}_other" name="q{{@index}}" value="-1" type="radio">
     <label for="q{{@index}}_other"><input type="text" name="q{{@index}}_other" /></label>
+    {{/unless}}
   {{/each}}
   </form>
+  {{#unless host}}
   <button type="button" id="fm-done">Done!</button>
   <button type="button" id="fm-reveal">Reveal next answer</button>
-</template>
-
-
-<template name="fm_host">
-  {{#each q in (state "all_questions")}}
-    <hr>
-    {{q.question}}
-    <br/>
-  {{/each}}
+  {{/unless}}
 </template>

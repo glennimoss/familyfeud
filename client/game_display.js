@@ -1,5 +1,10 @@
-import { getState } from '/imports/state.js';
 import { Events } from '/imports/events.js';
+
+Template.game_display.events({
+  'click #reset button': function () {
+    Meteor.call('reset');
+  },
+});
 
 Template.answer_board.onCreated(function () {
   console.log("Templated created, registering for events with", Events);
@@ -16,7 +21,6 @@ Template.logo.onCreated(function () {
 });
 
 Template.logo.helpers({
-  question_set: getState('question_set'),
   play_theme: function () {
     snd_theme.play();
   },

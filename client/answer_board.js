@@ -1,4 +1,4 @@
-import { State, Answers, getState } from '/imports/state.js';
+import { State, Answers, getState, Helpers } from '/imports/state.js';
 
 const snd_correct = new Audio('/ff-clang-full.mp3')
     , snd_no1_answer = new Audio('/ff-no1-answer-loud.mp3')
@@ -39,17 +39,12 @@ Template.answer_board.onRendered(function () {
   });
 });
 
-function getQuestion () {
-  return State.findOne("question").value;
-}
-
 Template.answer_board.helpers({
   answers: function () {
     return Answers.find({}, {sort: ["_id"]});
   },
-  question: getQuestion,
   scoreFactor: function () {
-    const question = getQuestion();
+    const question = getState("question");
     if (question.factor == 2) {
       return "DOUBLE";
     } else if (question.factor == 3) {
@@ -58,9 +53,10 @@ Template.answer_board.helpers({
   },
 });
 
+/*
 Template.strikes.helpers({
-  showStrikes: getState('showStrikes'),
-  numStrikes:  getState('numStrikes', function (numStrikes) {
+  showStrikes: get State('showStrikes'),
+  numStrikes:  get State('numStrikes', function (numStrikes) {
     if (getState('phase')() != 'play') {
       numStrikes = 1;
     }
@@ -71,6 +67,7 @@ Template.strikes.helpers({
     $('.strike').show();
   },
 });
+*/
 
 
 

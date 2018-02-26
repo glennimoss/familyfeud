@@ -1,4 +1,4 @@
-import { Answers, State, set_state } from '/imports/state.js';
+import { Answers, State, getState, set_state } from '/imports/state.js';
 import { questionsets } from '/imports/canadian_questions.js';
 import { Events } from '/imports/events.js';
 import _get from 'lodash.get';
@@ -104,19 +104,21 @@ Meteor.methods({
   },
   reset: reset,
   flip: function (idx) {
-    const a = Answers.findOne({_id: `a${idx}`});
-    let newside = "side2";
-    if (a.flipside == "side2") {
-      newside = "side3";
-    } else if (a.flipside == "side3") {
-      newside = "side1";
+    const ans = Answers.findOne({_id: `a${idx}`});
+
+    if (ans.flipside == "side1") {
+      Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
+      State.update("pending_score", {$inc: { value: ans.score * getState("question").factor}});
     }
 
-    Answers.update({_id: `a${idx}`}, {$set: {flipside: newside}});
     /*
-    if (a.flipside == "side1") {
-      Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
+    let newside = "side2";
+    if (ans.flipside == "side2") {
+      newside = "side3";
+    } else if (ans.flipside == "side3") {
+      newside = "side1";
     }
+    Answers.update({_id: `a${idx}`}, {$set: {flipside: newside}});
     */
   },
 });

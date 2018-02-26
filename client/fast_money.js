@@ -40,12 +40,6 @@ var fm_ans = null
   , fm_ans_pos = 0
   , times_around = 0;
 
-const helpers = {
-  all_questions: getState('all_questions'),
-};
-Template.fast_money_controller.helpers(helpers);
-Template.fm_host.helpers(helpers);
-
 Template.fast_money_controller.events({
   'click #fm-done': function () {
     var form = $('#fast-money').serializeArray();
@@ -73,7 +67,7 @@ Template.fast_money_controller.events({
       Meteor.call('reset');
       return;
     }
-    var all_questions = getState('all_questions')();
+    var all_questions = getState('all_questions');
     if (fm_ans_pos >= all_questions.length) {
       fm_ans_pos = 0;
 
