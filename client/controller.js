@@ -12,34 +12,6 @@ Template.controller.helpers({
   },
 });
 
-var hideStrikes = function () {
-  console.log("hideStrikes");
-  set_state({showStrikes: false})
-  if (getState('numStrikes') == 3) {
-    set_state({
-      numStrikes: 0,
-      phase: 'steal'
-    });
-    invertControl();
-  } else if (getState('phase') == 'steal') {
-    invertControl();
-    win();
-  }
-}
-
-var win = function () {
-  var team = getState('control');
-  State.update(`score_${team}`, {$inc: {value: getState('pending_score')}});
-  set_state({
-    pending_score: "",
-    phase: "reveal",
-  });
-}
-
-var invertControl = function () {
-  set_state({control:(getState('control') == 'team1' ? 'team2' : 'team1')});;
-}
-
 Template.controller.events({
   'click .choose-set button': function (event) {
     var set_name = $(event.currentTarget).text()
@@ -66,39 +38,13 @@ Template.controller.events({
   },
   'click #strike': function () {
     Meteor.call("strike");
-
-    console.log("click strike");
-    let numStrikes = getState('numStrikes')
-      , showStrikes = getState('showStrikes')
-      ;
-    console.log("click strike", numStrikes, showStrikes);
-
-    if (!showStrikes) {
-      if (getState('phase') == 'play') {
-        numStrikes += 1;
-      }
-
-      set_state({
-        numStrikes: numStrikes,
-        showStrikes: true,
-      });
-
-      Meteor.setTimeout(hideStrikes, 1500);
-    }
   },
   'click td.show-button button': function (event) {
     const $tgt = $(event.currentTarget)
         , idx = $tgt.parents('tr').index()
         ;
 
-    //Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
     Meteor.call("flip", idx);
-
-    var phase = getState('phase');
-    if ((phase == 'play' && _.all(getState('flipped')())) ||
-        phase == 'steal') {
-      win();
-    }
   },
   'click #next-q': function (event) {
     Meteor.call('next_question');

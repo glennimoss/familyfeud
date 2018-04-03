@@ -83,15 +83,31 @@ body {
   }
 
 
-  div.strike {
-    display: none;
+  div#strikes {
     position: absolute;
     top: 20%;
     width: 99%;
     text-align: center;
     .png-shadow;
     img {
+      display: none;
       padding: 0 10px;
+    }
+
+    &.strike1 {
+      img:nth-child(1) {
+        display: inline;
+      }
+    }
+    &.strike2 {
+      img:nth-child(1), img:nth-child(2)  {
+        display: inline;
+      }
+    }
+    &.strike3 {
+      img:nth-child(1), img:nth-child(2), img:nth-child(3)  {
+        display: inline;
+      }
     }
   }
   #background {

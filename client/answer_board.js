@@ -1,15 +1,27 @@
 import { State, Answers, getState, Helpers } from '/imports/state.js';
+import { Events } from '/imports/events.js';
 import snd from '/imports/audio.js';
 
 
 Template.answer_board.onCreated(function () {
   State.find("phase").observeChanges({
     changed (id, changes) {
-      debug
       if (changes.value == "reveal") {
         snd.win.play();
       }
     }
+  });
+
+  console.log("Registring for strike event");
+  Events.on("strike", function (n) {
+    console.log("Received strike", n);
+    const strikeClass = `strike${n}`
+        , strikeDiv = $("#strikes")
+        ;
+
+    strikeDiv.addClass(strikeClass);
+    snd.strike.play();
+    Meteor.setTimeout(() => strikeDiv.removeClass(strikeClass), 1500);
   });
 });
 
@@ -48,22 +60,3 @@ Template.answer_board.helpers({
     }
   },
 });
-
-/*
-Template.strikes.helpers({
-  showStrikes: get State('showStrikes'),
-  numStrikes:  get State('numStrikes', function (numStrikes) {
-    if (getState('phase')() != 'play') {
-      numStrikes = 1;
-    }
-    return new Array(numStrikes).fill(1);
-  }),
-  play_strike () {
-    snd.strike.play();
-    $('.strike').show();
-  },
-});
-*/
-
-
-

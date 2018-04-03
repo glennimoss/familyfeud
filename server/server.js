@@ -52,6 +52,21 @@ var reset = function () {
   }
 }
 
+function win () {
+  var team = getState('control');
+  State.update(`score_${team}`, {$inc: {value: getState('pending_score')}});
+  set_state({
+    pending_score: "",
+    phase: "reveal",
+  });
+}
+
+function invertedControl  () {
+  return getState('control') == 'team1' ? 'team2' : 'team1';
+}
+
+
+
 Meteor.methods({
   question_sets: function () {
     return _.keys(questionsets);
@@ -98,6 +113,31 @@ Meteor.methods({
   },
   strike: function () {
     console.log("Strike!");
+
+    const phase = getState("phase");
+    let numStrikes = getState("numStrikes");
+
+    if (phase == "play") {
+      numStrikes++;
+      const state = { numStrikes };
+
+      if (numStrikes >= 3) {
+        state.phase = "steal";
+        state.control = invertedControl();
+      }
+      set_state(state);
+    } else {
+      numStrikes = 1;
+
+      if (phase == 'steal') {
+        Meteor.setTimeout(() => {
+          set_state({control: invertedControl()});
+          win();
+        }, 1500);
+      }
+    }
+
+    Events.emit("strike", numStrikes);
   },
   get_all_questions: function () {
     set_state({all_questions: questionsets[State.findOne('question_set').value]});
