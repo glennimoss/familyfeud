@@ -1,17 +1,13 @@
 import { State, Answers, getState, Helpers } from '/imports/state.js';
+import snd from '/imports/audio.js';
 
-const snd_correct = new Audio('/ff-clang-full.mp3')
-    , snd_no1_answer = new Audio('/ff-no1-answer-loud.mp3')
-    , snd_strike = new Audio('/ff-strike-alt.mp2')
-    , snd_theme = new Audio('/ff-commercial-break.mp3')
-    ;
 
 Template.answer_board.onCreated(function () {
   State.find("phase").observeChanges({
     changed (id, changes) {
       debug
       if (changes.value == "reveal") {
-        snd_theme.play();
+        snd.win.play();
       }
     }
   });
@@ -63,7 +59,7 @@ Template.strikes.helpers({
     return new Array(numStrikes).fill(1);
   }),
   play_strike () {
-    snd_strike.play();
+    snd.strike.play();
     $('.strike').show();
   },
 });

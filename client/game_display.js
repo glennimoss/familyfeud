@@ -1,4 +1,5 @@
 import { Events } from '/imports/events.js';
+import snd from '/imports/audio.js';
 
 Template.game_display.events({
   'click #reset button': function () {
@@ -14,15 +15,9 @@ Template.answer_board.onCreated(function () {
   });
 });
 
-let snd_theme;
-
-Template.logo.onCreated(function () {
-  snd_theme = new Audio('/ff-theme-short.mp3');
-});
-
 Template.logo.helpers({
   play_theme: function () {
-    snd_theme.play();
+    snd.theme.play();
   },
 });
 

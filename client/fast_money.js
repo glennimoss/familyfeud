@@ -1,8 +1,5 @@
 import { State, getState, set_state } from '/imports/state.js';
-
-var snd_blip = new Audio('/ff-blip.wav')
-  , snd_bell = new Audio('/ff-bell.wav')
-  , snd_zero = new Audio('/ff-zero.wav');
+import snd from '/imports/audio.js';
 
 var currentAns = 0;
 Template.fast_money.animateAnswers = getState('fm_answer',
@@ -21,13 +18,13 @@ Template.fast_money.animateAnswers = getState('fm_answer',
     }
 
     var cell = $('.container').eq(currentAns++);
-    snd_blip.play();
+    snd.blip.play();
     cell.find('.answer span').text(fm_answer.answer.toUpperCase())
         .typewriter(function () {
        cell.find('.score').append('<span class="typewriter-cursor">█</span>');
        Meteor.setTimeout(function () {
          cell.find('.typewriter-cursor').remove();
-         (fm_answer.score == 0 ? snd_zero : snd_bell).play();
+         (fm_answer.score == 0 ? snd.zero : snd.bell).play();
          cell.find('.score span').show();
          State.update('fm_total_score', {$inc: {value: fm_answer.score}});
        }, 2000);
