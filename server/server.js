@@ -1,7 +1,7 @@
 import { Answers, State, getState, set_state } from '/imports/state.js';
 import { questionsets } from '/imports/canadian_questions.js';
 import { Events } from '/imports/events.js';
-import _get from 'lodash.get';
+import _ from 'lodash';
 
 var freshBoard = {
   phase: "faceoff",
@@ -102,8 +102,8 @@ Meteor.methods({
           const ans = state.question.answers[idx];
           Answers.update({ _id: "a" + idx },
                          {$set: {
-                           answer: _get(ans, "answer", ""),
-                           score: _get(ans, "score", 0),
+                           answer: _.get(ans, "answer", ""),
+                           score: _.get(ans, "score", 0),
                          }});
         }
       }, 500);
@@ -151,15 +151,11 @@ Meteor.methods({
       State.update("pending_score", {$inc: { value: ans.score * getState("question").factor}});
     }
 
-    /*
-    let newside = "side2";
-    if (ans.flipside == "side2") {
-      newside = "side3";
-    } else if (ans.flipside == "side3") {
-      newside = "side1";
+    const phase = getState('phase');
+    if ((phase == 'play' && !Answers.findOne({flipside: "side1"})) ||
+        phase == 'steal') {
+      win();
     }
-    Answers.update({_id: `a${idx}`}, {$set: {flipside: newside}});
-    */
   },
 });
 

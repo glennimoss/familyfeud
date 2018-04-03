@@ -12,6 +12,19 @@ Template.answer_board.onCreated(function () {
     }
   });
 
+  Answers.find().observeChanges({
+    changed (id, changes) {
+      if (changes.flipside == "side2") {
+        if (id == "a0") {
+          snd.no1_answer.play();
+        } else {
+          snd.correct.play();
+        }
+      }
+    }
+  });
+
+
   console.log("Registring for strike event");
   Events.on("strike", function (n) {
     console.log("Received strike", n);
