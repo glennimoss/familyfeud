@@ -1,41 +1,93 @@
-import { State, getState, set_state } from '/imports/state.js';
+import { Events } from '/imports/events.js';
+import { Answers, State, getState, set_state, Helpers } from '/imports/state.js';
 import snd from '/imports/audio.js';
 
 var currentAns = 0;
-Template.fast_money.animateAnswers = getState('fm_answer',
-  function (fm_answer) {
-    if (!fm_answer) {
-      return;
-    }
-
-    if (fm_answer == 'hide') {
-      $('.container:lt(5) .field span').hide();
-      return
-    }
-    if (fm_answer == 'show') {
-      $('.container:lt(5) .field span').show();
-      return
-    }
-
-    var cell = $('.container').eq(currentAns++);
+Template.fast_money.onCreated(function () {
+  Events.on("fm_hide", function () {
+    $('.container:lt(5) .field span').hide();
+  });
+  Events.on("fm_show", function () {
+    $('.container:lt(5) .field span').show();
+  });
+  console.log("Registering fm_reveal listener");
+  Events.on("fm_reveal", function (idx, ans) {
+    console.log("fm_reveal", idx, ans);
+    var cell = $('.container').eq(idx);
     snd.blip.play();
-    cell.find('.answer span').text(fm_answer.answer.toUpperCase())
+    cell.find('.answer span').text(ans.answer.toUpperCase())
         .typewriter(function () {
-       cell.find('.score').append('<span class="typewriter-cursor">█</span>');
+       cell.find('.score').append('<span class="typewriter-cursor">&nbsp;&nbsp;</span>');
        Meteor.setTimeout(function () {
          cell.find('.typewriter-cursor').remove();
-         (fm_answer.score == 0 ? snd.zero : snd.bell).play();
+         (ans.score == 0 ? snd.zero : snd.bell).play();
          cell.find('.score span').show();
-         State.update('fm_total_score', {$inc: {value: fm_answer.score}});
+         State.update('fm_total_score', {$inc: {value: ans.score}});
+         Answers.update({_id: `a${idx}`}, {$set: ans});
        }, 2000);
     });
-    cell.find('.score span').text(fm_answer.score);
-  }
-);
+    cell.find('.score span').text(ans.score);
+  });
+});
+Template.fast_money.onDestroyed(function () {
+  console.log("Turning off event subcriptions");
 
+  Events.stop("fm_hide");
+  Events.stop("fm_show");
+  Events.stop("fm_reveal");
+});
+/*
+Template.fast_money.onRendered(function () {
+  this.$("div.container").each(function () {
+    this._uihooks = {
+      insertElement: function(node, next) {
+        debugger;
+      },
+      moveElement: function(node, next) {
+        debugger;
+      },
+      removeElement: function(node, done) {
+        debugger;
+      }
+    }
+  });
+  this.$("div.field").each(function () {
+    this._uihooks = {
+      insertElement: function(node, next) {
+        debugger;
+      },
+      moveElement: function(node, next) {
+        debugger;
+      },
+      removeElement: function(node, done) {
+        debugger;
+      }
+    }
+  });
+});
+*/
+
+Template.fast_money.helpers({
+  answers: Helpers.answers,
+});
+
+Template.fm_round.events({
+  'click form#fast-money button': function (event) {
+    const answers = $('#fast-money').serializeArray();
+    Meteor.call("doAction", "done", answers);
+  },
+});
+Template.fm_end.events({
+  'click #fm-over': function () {
+    Meteor.call('reset');
+  },
+});
+
+  /*
 var fm_ans = null
   , fm_ans_pos = 0
   , times_around = 0;
+
 
 Template.fast_money_controller.events({
   'click #fm-done': function () {
@@ -100,4 +152,5 @@ Template.fast_money_controller.events({
     }
   },
 });
+*/
 

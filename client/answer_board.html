@@ -57,7 +57,7 @@
       <div class="blinker BB"></div>
       <div class="blinker CC"></div>
       <div class="blinker DD"></div>
-      <div class="score-box"><span>{{state "pending_score"}}</span></div>
+      <div class="score-box"><span>{{#if neq (state "smState") "revealAnswers"}}{{state "pending_score"}}{{/if}}</span></div>
       <div class="top border"></div>
     </div>
     <div id="score-team1" class="score-border {{#if eq (state "control") "team1"}}blink{{/if}}">

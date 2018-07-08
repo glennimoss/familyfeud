@@ -1,13 +1,21 @@
 <template name="fast_money">
   <div id="fast-money">
-    {{#each i in (range 10)}}
-      <div class="container">
+    {{#each ans in answers}}
+      <div class="container {{#if ans.answer}}revealed{{/if}}">
         <div class="field answer">
           &nbsp;­
+          {{#if ans.answer}}
+          <span>{{ans.answer}}</span>
+          {{else}}
           <span></span>
+          {{/if}}
         </div>
         <div class="field score">
+          {{#if ans.answer}}
+          <span>{{ans.score}}</span>
+          {{else}}
           <span></span>
+          {{/if}}
         </div>
       </div>
     {{/each}}
@@ -18,13 +26,13 @@
       </div>
     </div>
   </div>
-  {{animateAnswers}}
 </template>
 
 
-<template name="fast_money_controller">
-  <h1>Fast Money</h1>
-
+<template name="fm_start">
+  <button type="button" name="begin">Begin</button>
+</template>
+<template name="fm_round">
   <form id="fast-money">
   {{#each q in (state "all_questions")}}
     <hr>
@@ -40,9 +48,21 @@
     <label for="q{{@index}}_other"><input type="text" name="q{{@index}}_other" /></label>
     {{/unless}}
   {{/each}}
-  </form>
   {{#unless host}}
-  <button type="button" id="fm-done">Done!</button>
-  <button type="button" id="fm-reveal">Reveal next answer</button>
+    <button type="button">Done!</button>
   {{/unless}}
+  </form>
+</template>
+
+<template name="fm_reveal_answers">
+  <button type="button" name="revealNext">Reveal next answer</button>
+</template>
+<template name="hide_playerone_answers">
+  <button type="button" name="hide">Hide Player One's answers</button>
+</template>
+<template name="show_playerone_answers">
+  <button type="button" name="show">Show Player One's answers</button>
+</template>
+<template name="fm_end">
+  <button type="button" id="fm-over">Fast Money Over!</button>
 </template>

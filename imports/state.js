@@ -40,3 +40,17 @@ export const Helpers = {
     return Answers.find({}, {sort: ["_id"]});
   },
 };
+
+export function stateProp (obj, prop) {
+  const underProp = `_${prop}`;
+  Object.defineProperty(obj, prop, {
+    get: function () {
+      return this[underProp];
+    },
+    set: function (val) {
+      console.log("Updating", prop, this[underProp], "->", val);
+      this[underProp] = val;
+      set_state({[prop]: val});
+    },
+  });
+}

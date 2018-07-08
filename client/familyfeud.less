@@ -33,10 +33,10 @@
 }
 
 .typewriter-cursor {
-  color: red;
+  background-color: red;
   display: inline !important;
   position: relative;
-  top: -3px;
+  //top: -3px;
 }
 
 .container {
@@ -131,8 +131,8 @@ body {
       position: absolute;
       clip-path: ellipse(500px 300px);
 
-      &.left .row.left, &.right .row.right {
-        animation: 1s infinite blinker;
+      &.team1 .row.left, &.team2 .row.right {
+        animation: 1s 2 blinker;
       }
       .row {
         width: 20px;
@@ -445,6 +445,9 @@ body {
         display: none;
       }
     }
+    div.container.revealed > div.field > span {
+      display: inline;
+    }
 
     div.answer {
       width: 300px;
@@ -476,6 +479,8 @@ body {
 }
 
 #controller {
+  padding: 10px;
+
   h1 {
     margin-bottom: 0;
   }
@@ -491,10 +496,6 @@ body {
 
   #answers {
     margin-top: 1em;
-    td.show-button {
-      text-align: right;
-    }
-
   }
 
   button {
@@ -524,3 +525,51 @@ body {
   }
 }
 
+#buzzers {
+  text-align: center;
+  font-size: 60px;
+
+  & > * {
+    display: none;
+  }
+
+  &.face-off {
+    .buzzer, .divider {
+      display: inherit;
+    }
+
+    .buzzer {
+      width: 100vw;
+      height: 45vh;
+      line-height: 45vh;
+    }
+    .divider {
+      width: 100vw;
+      height: 10vh;
+      background-color: black;
+    }
+
+    &.team1 #team1, &.team2 #team2 {
+      background-color: red;
+    }
+  }
+
+  #team1 {
+    transform: rotate(180deg);
+  }
+
+  .notbuzzer {
+    display: table-cell;
+    vertical-align: middle;
+    width: 100vw;
+    height: 100vh;
+
+    img {
+      width: 90vw;
+    }
+  }
+
+  &.faceoff .notbuzzer {
+    display: none;
+  }
+}

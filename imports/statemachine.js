@@ -1,21 +1,23 @@
 export class StateMachine {
-  constructor (startName, endName, onStart) {
+  constructor (onStart) {
     this.states = {};
 
-    this.startState = this.addState(startName);
-    this.endState = this.addState(endName);
+    //this.startState = this.addState(startName);
+    //this.endState = this.addState(endName);
     this.onStart = onStart
   }
 
-  addState (name, onArrived) {
-    this.states[name] = new State(name, this, onArrived);
-    return this.states[name];
+  addStartState (name, actions) {
+    this.startState = this.addState(name, actions);
   }
 
-  addTransition (from, to, onTransition) {
-    from = this.getState(from);
-    to = this.getState(to);
-    return from.addTransition(to);
+  addEndState (name) {
+    this.endState = this.addState(name);
+  }
+
+  addState (name, actions) {
+    this.states[name] = new State(name, this, actions);
+    return this.states[name];
   }
 
   getState (name) {
@@ -25,38 +27,20 @@ export class StateMachine {
     return this.states[name];
   }
 
-  start () {
+  start (...args) {
     const inst = new StateMachineInstance(this);
     if (this.onStart) {
-      this.onStart.call(inst.scope);
+      this.onStart.apply(inst.scope, args);
     }
     return inst;
   }
 }
 
 class State {
-  constructor (name, sm, onArrived) {
+  constructor (name, sm, actions) {
     this.name = name;
     this.sm = sm;
-    this.onArrived = onArrived;
-    this.transitions = {};
-  }
-
-  addTransition (to, onTransition) {
-    to = this.sm.getState(to);
-    if (!to) {
-      to = this.sm.addState(to);
-    }
-    this.transitions[to.name] = new Transition(this, to, onTransition);
-    return this.transitions[to.name];
-  }
-}
-
-class Transition {
-  constructor (from, to, onTransition) {
-    this.from = from;
-    this.to = to;
-    this.onTransition = onTransition;
+    this.actions = actions || {};
   }
 }
 
@@ -65,21 +49,41 @@ class StateMachineInstance {
     this.sm = sm;
     this.scope = {};
     this.state = this.sm.startState;
+    this.availableActions = null;
   }
 
-  getTransitions () {
-    return Object.keys(this.state.transitions);
+  action (act, ...args) {
+    const action = this.state.actions[act];
+    if (!action) {
+      throw new Error(`State ${this.state.name} has no action ${act}`);
+    }
+    let nextState = this.sm.getState(action);
+    if (!nextState) {
+      const transitionTo = action.apply(this.scope, args)
+      nextState = this.sm.getState(transitionTo);
+      if (!nextState) {
+        throw new Error(`State ${this.state.name}'s action ${act} transitioned to non-existent state ${transitionTo}`);
+      }
+    }
+    this.state = nextState
+    console.log("Transitioned to state:", this.state.name)
+    if (this.state.actions._) {
+      console.log("This state has an incoming action");
+      this.availableActions = this.state.actions._.call(this.scope);
+    } else {
+      this.availableActions = null;
+    }
   }
 
-  transition (to, ...args) {
-    const trans = this.state.transitions[to];
-    if (trans.onTransition) {
-      trans.onTransition.apply(this.scope, args);
+  getActions () {
+    if (!this.availableActions) {
+      this.availableActions = Object.keys(this.state.actions);
+      if (this.availableActions[0] == '_') {
+        this.availableActions = this.availableActions.slice(1);
+      }
     }
-    this.state = trans.to;
-    if (this.state.onArrived) {
-      this.state.onArrived.apply(this.scope); // , args); ???
-    }
+
+    return this.availableActions;
   }
 
   accepted () {

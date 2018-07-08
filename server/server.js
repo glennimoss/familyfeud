@@ -1,10 +1,12 @@
+import yaml from 'js-yaml';
 import { Answers, State, getState, set_state } from '/imports/state.js';
-import { questionsets } from '/imports/canadian_questions.js';
 import { Events } from '/imports/events.js';
+import { RoundSM } from '/server/game.js';
 import _ from 'lodash';
 
-var freshBoard = {
-  phase: "faceoff",
+var questionsets = {}
+  , freshBoard = {
+  //phase: "faceoff",
   showStrikes: false,
   numStrikes: 0,
   //flipped: [],
@@ -16,21 +18,42 @@ var freshBoard = {
   pending_score: 0,
   control: null,
   fm_total_score: 0,
+  smState: null,
 };
+
+function magicfactor (n, m) {
+  return Math.max(1, Math.round(4*n/m-1));
+}
+
+//const qsets = yaml.safeLoad(Assets.getText("wynn_youth_qs.yaml"));
+const qsets = yaml.safeLoad(Assets.getText("canadian_questions.yaml"));
+for (const [setname, qset] of Object.entries(qsets)) {
+  questionsets[setname] = [];
+  const qentries = Object.entries(qset);
+  for (const [question, answers] of qentries) {
+    const q = { question, factor: magicfactor(questionsets[setname].length + 1, qentries.length), answers: []}
+    for (const [answer, score] of Object.entries(answers)) {
+      q.answers.push({answer, score});
+    }
+    questionsets[setname].push(q);
+  }
+}
+
+console.dir(questionsets, { depth: null });
 
 var freshState = _.extend({}, freshBoard, {
   screen: "logo",
   score_team1: 0,
   score_team2: 0,
-  question_set: "",
   q_num: 0,
-  phase: "pregame",
+  //phase: "pregame",
   all_question_sets: _.keys(questionsets),
   all_questions: [],
   fm_answer: null,
 });
 
 var reset = function () {
+  console.log("Resetting...");
   State.remove({})
   Answers.remove({});
 
@@ -52,20 +75,25 @@ var reset = function () {
   }
 }
 
+/*
 function win () {
   var team = getState('control');
   State.update(`score_${team}`, {$inc: {value: getState('pending_score')}});
   set_state({
-    pending_score: "",
+    pending_score: 0,
     phase: "reveal",
   });
 }
+*/
 
 function invertedControl  () {
   return getState('control') == 'team1' ? 'team2' : 'team1';
 }
 
-
+let currentRound;
+function updateSM () {
+  set_state({smState: currentRound.state.name});
+}
 
 Meteor.methods({
   question_sets: function () {
@@ -76,8 +104,8 @@ Meteor.methods({
     Events.emit("testev", "this is a next_question event?");
     console.log("Event emitted??");
     var q_num = State.findOne('q_num').value
-      , question_set = State.findOne('question_set').value
-      , questions = questionsets[question_set] || []
+      , questions = State.findOne('all_questions').value
+      ;
 
     if (q_num < questions.length) {
       var state = _.extend({}, freshBoard, {
@@ -107,10 +135,15 @@ Meteor.methods({
                          }});
         }
       }, 500);
+
+      currentRound = RoundSM.start(state.question);
+      updateSM();
+
     } else {
       reset();
     }
   },
+  /*
   strike: function () {
     console.log("Strike!");
 
@@ -129,7 +162,9 @@ Meteor.methods({
     } else {
       numStrikes = 1;
 
-      if (phase == 'steal') {
+      if (phase == "faceoff") {
+        state.control = invertedControl();
+      } else if (phase == 'steal') {
         Meteor.setTimeout(() => {
           set_state({control: invertedControl()});
           win();
@@ -139,10 +174,21 @@ Meteor.methods({
 
     Events.emit("strike", numStrikes);
   },
-  get_all_questions: function () {
-    set_state({all_questions: questionsets[State.findOne('question_set').value]});
+  */
+  choose_questionset: function (setname) {
+    console.log("Chose questionset", setname);
+    const state = {all_questions: questionsets[setname]};
+
+    if (setname.search('Fast Money') == 0) {
+      state.screen = 'fast-money';
+      currentRound = FastMoneySM.start(state.all_questions);
+      updateSM();
+    }
+    set_state(state);
+    Events.emit("play-theme");
   },
   reset: reset,
+  /*
   flip: function (idx) {
     const ans = Answers.findOne({_id: `a${idx}`});
 
@@ -157,6 +203,12 @@ Meteor.methods({
       win();
     }
   },
+  */
+  doAction: function (act, ...args) {
+    console.log("doAction:", act, args);
+    currentRound.action(act, ...args);
+    updateSM();
+  }
 });
 
 function* question2yaml (q) {

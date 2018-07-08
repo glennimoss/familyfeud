@@ -17,7 +17,7 @@
       var el = $(this)
         , conf = $.extend({}, $[name+"Defaults"], options);
       el.queue("fx", function(next) {
-        var cursor = $('<span class="typewriter-cursor">█</span>');
+        var cursor = $('<span class="typewriter-cursor">&nbsp;&nbsp;</span>');
         cursor.insertAfter(this);
         animateNode(this, conf, function () {
           cursor.remove();

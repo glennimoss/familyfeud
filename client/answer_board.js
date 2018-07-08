@@ -4,12 +4,15 @@ import snd from '/imports/audio.js';
 
 
 Template.answer_board.onCreated(function () {
-  State.find("phase").observeChanges({
-    changed (id, changes) {
-      if (changes.value == "reveal") {
-        snd.win.play();
-      }
-    }
+  Events.on("win", function () {
+    snd.win.play();
+  });
+
+  Events.on("buzz-in", function (T) {
+    snd.buzz.play();
+    const $lights = $(".lights");
+    $lights.addClass(T);
+    Meteor.setTimeout(() => $lights.removeClass(T), 3000);
   });
 
   Answers.find().observeChanges({
@@ -25,7 +28,6 @@ Template.answer_board.onCreated(function () {
   });
 
 
-  console.log("Registring for strike event");
   Events.on("strike", function (n) {
     console.log("Received strike", n);
     const strikeClass = `strike${n}`

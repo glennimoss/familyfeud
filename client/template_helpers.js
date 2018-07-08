@@ -1,4 +1,5 @@
 import { State, getState } from '/imports/state.js';
+import _ from 'lodash';
 
 Template.registerHelper('state', getState);
 
@@ -36,6 +37,11 @@ Template.registerHelper('min', (...args) => {
 Template.registerHelper("max", function (v1, v2) {
   return Math.max(v1, v2);
 });
+*/
+
+Template.registerHelper("not", function (v) {
+  return v1 && v2;
+});
 
 Template.registerHelper("and", function (v1, v2) {
   return v1 && v2;
@@ -44,7 +50,6 @@ Template.registerHelper("and", function (v1, v2) {
 Template.registerHelper("or", function (v1, v2) {
   return v1 || v2;
 });
-*/
 
 Template.registerHelper("eq", function (v1, v2) {
   return v1 == v2;
@@ -61,3 +66,14 @@ Template.registerHelper("upper", function (text) {
 Template.registerHelper("debug", function (obj) {
   console.dir(obj);
 });
+
+Template.registerHelper("pretty", _.startCase);
+
+Template.registerHelper("in", function (needle, ...haystack) {
+    return haystack.indexOf(needle) != -1;
+});
+
+Template.registerHelper("notin", function (needle, ...haystack) {
+    return haystack.indexOf(needle) == -1;
+});
+

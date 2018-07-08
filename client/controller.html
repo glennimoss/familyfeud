@@ -1,55 +1,18 @@
 <template name="controller">
   <div id="testbed" style="font-size: 20px; width: 0px;"></div>
   <div id="controller">
-    {{#if (state "question_set")}}
-      {{#if eq (state "screen") "fast-money"}}
-        {{>fast_money_controller}}
+    {{#if (state "all_questions")}}
+      <div id="state-actions">
+      {{#if eq (state "screen") "logo"}}
+        <button id="next-q" type="button">Start Game</button>
       {{else}}
-        {{>stat_summary}}
-        <hr>
-        {{#let question=(state "question")}}
-        {{question.question}}
-        {{#unless host}}
-        <hr>
-        {{#if phaseIn "pregame" "reveal"}}
-          <button id="next-q" type="button">Next Question</button>
+        {{#if eq (state "screen") "fast-money"}}
+          <h1>Fast Money</h1>
         {{/if}}
-        {{#if eq (state "screen") "board"}}
-          {{#if eq (state "phase") "faceoff"}}
-          <button id="cntl-team1" type="button">Team 1 to Play</button>
-          <button id="cntl-team2" type="button">Team 2 to Play</button>
-          {{/if}}
-          <button id="strike" type="button">
-            {{#if eq (state "phase") "faceoff"}}
-              Faceoff
-            {{/if}}
-            {{#if eq (state "phase") "play"}}
-              {{nth}}
-            {{/if}}
-            {{#if eq (state "phase") "steal"}}
-              Steal
-            {{/if}}
-            Strike!
-          </button>
-          <table id="answers">
-            <tbody>
-              {{#each ans in answers}}
-                {{#if ans.answer}}
-                <tr>
-                  <td>{{ans.ord}}:</td>
-                  <td>{{upper ans.answer}}</td>
-                  <td class="show-button">
-                    <button type="button" disabled={{eq ans.flipside "side2"}}>Show</button>
-                  </td>
-                </tr>
-                {{/if}}
-              {{/each}}
-            </tbody>
-          </table>
-        {{/if}}
-        {{/unless}}
-        {{/let}}
+
+        {{>Template.dynamic template=(state "smState")}}
       {{/if}}
+      </div>
     {{else}}
       <div class="choose-set">
         Choose a question set:
@@ -62,7 +25,6 @@
 </template>
 
 <template name="stat_summary">
-  <h1>Scores:</h1>
   <table id="scores">
     <tbody>
       <tr>
@@ -71,32 +33,108 @@
       </tr>
     </tbody>
   </table>
-  {{#if eq (state "phase") "faceoff"}}
-  Faceoff!
-  {{/if}}
-  {{#if eq (state "phase") "play"}}
-    {{#if eq (state "control") "team1"}}
-    Team 1 is in control.
+</template>
+
+<template name="answer_list">
+  {{#unless host}}
+    <button type="button" name="strike">
+      {{#if eq (state "smState") "answer"}}{{nth}} {{/if}}Strike
+    </button>
+    <table id="answers">
+      <tbody>
+        {{#each ans in answers}}
+          {{#if ans.answer}}
+          <tr>
+            <td>{{ans.ord}}:</td>
+            <td class="show-button">
+              <button type="button" disabled={{eq ans.flipside "side2"}}>{{upper ans.answer}}</button>
+            </td>
+          </tr>
+          {{/if}}
+        {{/each}}
+      </tbody>
+    </table>
+  {{/unless}}
+</template>
+
+<template name="disabled">
+  {{#unless eq (state "phase") "pregame"}}
+    {{#if state "control"}}
+      {{pretty (state "control")}}
+      {{#if eq (state "phase") "faceoff"}}
+        buzzed in!
+      {{else if eq (state "phase") "play"}}
+         is in control.
+      {{else if eq (state "phase") "steal"}}
+        has a chance to steal.
+      {{else if eq (state "phase") "reveal"}}
+        wins!
+        <br/>Reveal the remaining answers.
+      {{/if}}
+    {{else if eq (state "phase") "faceoff"}}
+      Faceoff!
+    {{else}}
+      What phase is this??
     {{/if}}
-    {{#if eq (state "control") "team2"}}
-    Team 2 is in control.
-    {{/if}}
-  {{/if}}
-  {{#if eq (state "phase") "steal"}}
-    {{#if eq (state "control") "team1"}}
-    Team 1 has a chance to steal.
-    {{/if}}
-    {{#if eq (state "control") "team2"}}
-    Team 2 has a chance to steal.
-    {{/if}}
-  {{/if}}
-  {{#if eq (state "phase") "reveal"}}
-    {{#if eq (state "control") "team1"}}
-    Team 1 wins!
-    {{/if}}
-    {{#if eq (state "control") "team2"}}
-    Team 2 wins!
-    {{/if}}
-    <br/>Reveal the remaining answers.
-  {{/if}}
+  {{/unless}}
+</template>
+
+
+<template name="question">
+  <hr>
+  {{#let question=(state "question")}}
+    {{question.question}}
+  {{/let}}
+  <hr>
+</template>
+
+<template name="pregame">
+  A representative from each team goes to the buzzer.
+  {{#unless host}}
+    <button type="button" name="begin">Start Round</button>
+  {{/unless}}
+</template>
+<template name="face-off">
+  Waiting for a buzz-in.
+  {{>question}}
+</template>
+<template name="buzzed-in">
+  {{pretty (state "control")}} has buzzed in.
+  {{>question}}
+  {{>answer_list}}
+</template>
+<template name="faceoff-steal">
+  {{pretty (state "control")}} has a chance to steal.
+  {{>question}}
+  {{>answer_list}}
+</template>
+<template name="play-or-pass">
+  {{pretty (state "control")}} must choose to play or pass.
+  {{#unless host}}
+    <button type="button" name="play">Play</button>
+    <button type="button" name="pass">Pass</button>
+  {{/unless}}
+</template>
+<template name="answer">
+  {{pretty (state "control")}} is answering.
+  {{>question}}
+  {{>answer_list}}
+</template>
+<template name="steal">
+  {{pretty (state "control")}} has a chance to steal.
+  {{>question}}
+  {{>answer_list}}
+</template>
+<template name="revealAnswers">
+  {{pretty (state "control")}} wins!<br/>
+  Reveal the remaining answers.
+  {{#unless host}}
+    <button type="button" name="revealNext">Reveal next answer</button>
+  {{/unless}}
+</template>
+<template name="end-round">
+  {{pretty (state "control")}} wins!<br/>
+  {{#unless host}}
+    <button id="next-q" type="button">Next Question</button>
+  {{/unless}}
 </template>

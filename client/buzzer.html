@@ -1,0 +1,19 @@
+<template name="buzzer">
+  <div id="buzzers" class="{{state "smState"}} {{state "control"}}">
+    <div id="team1" class="buzzer">
+      Team 1
+    </div>
+    <div class="divider">
+    </div>
+    <div id="team2" class="buzzer">
+      Team 2
+    </div>
+    <div class="notbuzzer">
+      {{#if eq (state "screen") "logo"}}
+        <img src="/family-feud-logo.png" />
+      {{else}}
+        {{pretty (state "control")}} {{state "smPhase"}}
+      {{/if}}
+    </div>
+  </div>
+</template>

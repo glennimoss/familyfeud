@@ -1,6 +1,7 @@
 <head>
   <title>Family Feud</title>
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, inital-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
 
 <body>
@@ -16,5 +17,8 @@
   {{/if}}
   {{#if path "/host"}}
     {{>controller host=true}}
+  {{/if}}
+  {{#if path "/buzzer"}}
+    {{>buzzer}}
   {{/if}}
 </template>
