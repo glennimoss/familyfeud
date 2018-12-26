@@ -1,5 +1,6 @@
 Meteor.subscribe("state");
 Meteor.subscribe("answers");
+Meteor.subscribe("fm_answers");
 
 Template.dispatcher.helpers({
   path: function (val) {

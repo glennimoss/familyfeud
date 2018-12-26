@@ -1,5 +1,5 @@
 import yaml from 'js-yaml';
-import { Answers, State, getState, set_state } from '/imports/state.js';
+import { Answers, FMAnswers, State, getState, set_state } from '/imports/state.js';
 import { Events } from '/imports/events.js';
 import { RoundSM } from '/server/game.js';
 import _ from 'lodash';
@@ -244,6 +244,10 @@ Meteor.startup(function () {
 
   Meteor.publish("answers", function () {
     return Answers.find();
+  });
+
+  Meteor.publish("fm_answers", function () {
+    return FMAnswers.find();
   });
 
   /* To randomize questions into manageable sets...

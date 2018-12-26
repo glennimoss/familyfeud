@@ -1,5 +1,5 @@
 import { Events } from '/imports/events.js';
-import { Answers, State, getState, set_state, Helpers } from '/imports/state.js';
+import { Answers, FMAnswers, State, getState, set_state, Helpers } from '/imports/state.js';
 import snd from '/imports/audio.js';
 
 var currentAns = 0;
@@ -27,6 +27,9 @@ Template.fast_money.onCreated(function () {
        }, 2000);
     });
     cell.find('.score span').text(ans.score);
+  });
+  Events.on("fm_already_answered", function () {
+    snd.fm_already_answered.play();
   });
 });
 Template.fast_money.onDestroyed(function () {
@@ -71,8 +74,19 @@ Template.fast_money.helpers({
   answers: Helpers.answers,
 });
 
+Template.fm_round.helpers({
+  isPrevAnswer: function (qidx, aidx) {
+    console.log(`isPrevAnswer ${qidx} ${aidx}`);
+    const prev = FMAnswers.findOne({_id: `a${qidx}`});
+    console.log(prev);
+    return prev && prev.ans == aidx;
+  },
+});
 Template.fm_round.events({
-  'click form#fast-money button': function (event) {
+  'click form#fast-money button.prev': function (event) {
+    Events.emit("fm_already_answered");
+  },
+  'click form#fast-money button#done': function (event) {
     const answers = $('#fast-money').serializeArray();
     Meteor.call("doAction", "done", answers);
   },

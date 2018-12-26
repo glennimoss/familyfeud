@@ -1,4 +1,4 @@
-import { Answers, State, getState, set_state, stateProp } from '/imports/state.js';
+import { Answers, FMAnswers, State, getState, set_state, stateProp } from '/imports/state.js';
 import { Events } from '/imports/events.js';
 //import { questionsets } from '/imports/canadian_questions.js';
 //import { Events } from '/imports/events.js';
@@ -256,6 +256,8 @@ sm.action('play');
 */
 
 FastMoneySM = new StateMachine(function (questions) {
+  FMAnswers.remove({});
+
   this.questions = questions;
   this.firstPlayerAnswers = null;
   this.secondPlayerAnswers = null;
@@ -280,6 +282,15 @@ FastMoneySM.addState('fm_round', {
     }
     console.log("Answers:", answers);
     if (!this.firstPlayerAnswers) {
+      for (let i=0; i<5; i++) {
+        FMAnswers.insert({
+          _id: `a${i}`,
+          ans: guesses[`q${i}`],
+        });
+      }
+
+      console.log(FMAnswers.find({}).fetch());
+
       this.firstPlayerAnswers = answers;
       return "fm_reveal_answers";
     }

@@ -15,5 +15,6 @@ const correct = new Audio('/ff-clang-full.mp3')
     , bell = new Audio('/ff-bell.wav')
     , zero = new Audio('/ff-zero.wav')
     , buzz = new Audio('/ff-ringin.wav')
+    , fm_already_answered = new Audio('/ff-tryagn2.wav')
     ;
 

@@ -5,7 +5,7 @@
         <div class="field answer">
           &nbsp;­
           {{#if ans.answer}}
-          <span>{{ans.answer}}</span>
+          <span>{{upper ans.answer}}</span>
           {{else}}
           <span></span>
           {{/if}}
@@ -40,8 +40,12 @@
     {{#unless host}}
     {{#let parent_idx=@index}}
     {{#each ans in q.answers}}
+    {{#if isPrevAnswer parent_idx @index}}
+    <button type="button" class="prev">Buzz: {{ans.answer}}</button>
+    {{else}}
     <input id="q{{parent_idx}}_{{@index}}" name="q{{parent_idx}}" value="{{@index}}" type="radio">
     <label for="q{{parent_idx}}_{{@index}}">{{ans.answer}} {{ans.score}}</label><br/>
+    {{/if}}
     {{/each}}
     {{/let}}
     <input id="q{{@index}}_other" name="q{{@index}}" value="-1" type="radio">
@@ -49,7 +53,7 @@
     {{/unless}}
   {{/each}}
   {{#unless host}}
-    <button type="button">Done!</button>
+    <button id="done" type="button">Done!</button>
   {{/unless}}
   </form>
 </template>

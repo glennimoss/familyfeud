@@ -34,6 +34,7 @@ export function set_state (keys, val) {
 }
 
 export const Answers = new Meteor.Collection("answers");
+export const FMAnswers = new Meteor.Collection("fm_answers");
 
 export const Helpers = {
   answers () {
