@@ -7,20 +7,6 @@ export function getState (key) {
   }
 };
 
-/*
-getState (key, fn) {
-  return function () {
-    var obj = State.findOne(key);
-    if (obj) {
-      if (_.isFunction(fn)) {
-        return fn.apply(this, [obj.value].concat(_.values(arguments)));
-      }
-      return obj.value;
-    }
-  }
-}
-*/
-
 export function set_state (keys, val) {
   if (!_.isObject(keys)) {
     var obj = {};

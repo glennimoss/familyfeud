@@ -1,64 +1,7 @@
 import { Answers, FMAnswers, State, getState, set_state, stateProp } from '/imports/state.js';
 import { Events } from '/imports/events.js';
-//import { questionsets } from '/imports/canadian_questions.js';
-//import { Events } from '/imports/events.js';
-//import _get from 'lodash.get';
 import { StateMachine } from '/imports/statemachine.js';
 import _ from 'lodash';
-
-const phases = ["pregame", "faceoff", "play", "steal", "reveal"];
-const screens = ["logo", "board", "fast-money"];
-
-/*
-function win (team) {
-  State.update(`score_${team}`, {$inc: {value: getState('pending_score')}});
-  set_state({
-    pending_score: "",
-    phase: "reveal",
-  });
-}
-*/
-
-/*
-GameSM = new StateMachine("logo", "gameover");
-
-GameSM.addTransition("logo", "main_round");
-GameSM.addTransition("main-round", "main-round");
-GameSM.addTransition("main-round", "fast-money");
-GameSM.addTransition("fast-money", "gameover");
-
-RoundSM = new StateMachine("pregame", "reveal", function () {
-  this.strikes = 0;
-  this.score = {
-    team1: 0,
-    team2: 0,
-    pending: 0,
-  };
-  this.control = null;
-});
-RoundSM.addTransition("pregame", "faceoff");
-RoundSM.addTransition("faceoff", "buzzIn", function (team) {
-  this.control = team;
-});
-RoundSM.addTransition("buzzIn", "giveAnswer", function (rank) {
-  this.faceoffRank = rank;
-}); // if #1 Answer
-RoundSM.addTransition("buzzIn", "choosePlayPass"); // if #1 Answer
-RoundSM.addTransition("buzzIn", "oneUp"); // > #1 answer or Strike
-RoundSM.addTransition("oneUp", "choosePlayPass"); // Beats answer
-RoundSM.addTransition("oneUp", "badFaceoff"); // if both Strike
-RoundSM.addTransition("choosePlayPass", "play", function(playOrPass) {
-  if (playOrPass == "pass") {
-    this.team = invertTeam(this.team);
-  }
-});
-RoundSM.addTransition("play", "win");
-RoundSM.addTransition("play", "steal");
-RoundSM.addTransition("steal", "win");
-RoundSM.addTransition("win", "reveal");
-
-
-*/
 
 function revealAnswer (idx, score=true) {
   console.log(`revealAnswer(${idx}, ${score})`);

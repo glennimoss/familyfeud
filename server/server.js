@@ -6,10 +6,8 @@ import _ from 'lodash';
 
 var questionsets = {}
   , freshBoard = {
-  //phase: "faceoff",
   showStrikes: false,
   numStrikes: 0,
-  //flipped: [],
   question: {
     question: "",
     factor: 1,
@@ -47,7 +45,6 @@ var freshState = _.extend({}, freshBoard, {
   score_team1: 0,
   score_team2: 0,
   q_num: 0,
-  //phase: "pregame",
   all_question_sets: _.keys(questionsets),
   all_questions: [],
   fm_answer: null,
@@ -76,17 +73,6 @@ var reset = function () {
   }
 }
 
-/*
-function win () {
-  var team = getState('control');
-  State.update(`score_${team}`, {$inc: {value: getState('pending_score')}});
-  set_state({
-    pending_score: 0,
-    phase: "reveal",
-  });
-}
-*/
-
 function invertedControl  () {
   return getState('control') == 'team1' ? 'team2' : 'team1';
 }
@@ -112,7 +98,6 @@ Meteor.methods({
       var state = _.extend({}, freshBoard, {
         screen: "board",
         question: questions[q_num],
-        //flipped: _.times(questions[q_num].answers.length, function () {}),
       });
       set_state(state);
       State.update('q_num', {$inc: {value: 1}});
@@ -120,9 +105,7 @@ Meteor.methods({
       for (let idx=0; idx<10; idx++) {
         Answers.update({ _id: "a" + idx },
                        {$set: {
-                         //answer: ans.answer,
                          flipside: idx<state.question.answers.length ? "side1" : "side3",
-                         //score: ans.score,
                        }});
       }
 
@@ -144,38 +127,6 @@ Meteor.methods({
       reset();
     }
   },
-  /*
-  strike: function () {
-    console.log("Strike!");
-
-    const phase = getState("phase");
-    let numStrikes = getState("numStrikes");
-
-    if (phase == "play") {
-      numStrikes++;
-      const state = { numStrikes };
-
-      if (numStrikes >= 3) {
-        state.phase = "steal";
-        state.control = invertedControl();
-      }
-      set_state(state);
-    } else {
-      numStrikes = 1;
-
-      if (phase == "faceoff") {
-        state.control = invertedControl();
-      } else if (phase == 'steal') {
-        Meteor.setTimeout(() => {
-          set_state({control: invertedControl()});
-          win();
-        }, 1500);
-      }
-    }
-
-    Events.emit("strike", numStrikes);
-  },
-  */
   choose_questionset: function (setname) {
     console.log("Chose questionset", setname);
     const state = {all_questions: questionsets[setname]};
@@ -189,22 +140,6 @@ Meteor.methods({
     Events.emit("play-theme");
   },
   reset: reset,
-  /*
-  flip: function (idx) {
-    const ans = Answers.findOne({_id: `a${idx}`});
-
-    if (ans.flipside == "side1") {
-      Answers.update({_id: `a${idx}`}, {$set: {flipside: "side2"}});
-      State.update("pending_score", {$inc: { value: ans.score * getState("question").factor}});
-    }
-
-    const phase = getState('phase');
-    if ((phase == 'play' && !Answers.findOne({flipside: "side1"})) ||
-        phase == 'steal') {
-      win();
-    }
-  },
-  */
   doAction: function (act, ...args) {
     console.log("doAction:", act, args);
     currentRound.action(act, ...args);

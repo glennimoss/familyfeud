@@ -2,8 +2,6 @@ export class StateMachine {
   constructor (onStart) {
     this.states = {};
 
-    //this.startState = this.addState(startName);
-    //this.endState = this.addState(endName);
     this.onStart = onStart
   }
 
