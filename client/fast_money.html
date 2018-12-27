@@ -59,14 +59,28 @@
 </template>
 
 <template name="fm_reveal_answers">
-  <button type="button" name="revealNext">Reveal next answer</button>
+  {{current_question}}
+  {{#unless host}}
+  <button type="button" name="revealNext">Reveal answer</button>
+  {{/unless}}
 </template>
 <template name="hide_playerone_answers">
+  We will now hide player one's answers. <br>
+  (Have player two return.)
+  {{#unless host}}
   <button type="button" name="hide">Hide Player One's answers</button>
+  {{/unless}}
 </template>
 <template name="show_playerone_answers">
+  (Have player two face away from the game board.)<br>
+  Let's remind everyone of player one's answers.
+  {{#unless host}}
   <button type="button" name="show">Show Player One's answers</button>
+  {{/unless}}
 </template>
 <template name="fm_end">
+  That's all folks!
+  {{#unless host}}
   <button type="button" id="fm-over">Fast Money Over!</button>
+  {{/unless}}
 </template>

@@ -15,8 +15,9 @@ var questionsets = {}
   },
   pending_score: 0,
   control: null,
-  fm_total_score: 0,
   smState: null,
+  fm_total_score: 0,
+  fm_reveal_idx: null,
 };
 
 function magicfactor (n, m) {
@@ -47,7 +48,6 @@ var freshState = _.extend({}, freshBoard, {
   q_num: 0,
   all_question_sets: _.keys(questionsets),
   all_questions: [],
-  fm_answer: null,
 });
 
 var reset = function () {

@@ -61,6 +61,14 @@ Template.fm_round.events({
     Meteor.call("doAction", "done", answers);
   },
 });
+Template.fm_reveal_answers.helpers({
+  current_question: function () {
+    const all_qs = getState("all_questions")
+        , idx = getState("fm_reveal_idx")
+        ;
+    return all_qs[idx%5].question;
+  },
+});
 Template.fm_end.events({
   'click #fm-over': function () {
     Meteor.call('reset');

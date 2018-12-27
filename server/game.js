@@ -204,7 +204,8 @@ FastMoneySM = new StateMachine(function (questions) {
   this.questions = questions;
   this.firstPlayerAnswers = null;
   this.secondPlayerAnswers = null;
-  this.revealIdx = 0;
+  stateProp(this, 'fm_reveal_idx');
+  this.fm_reveal_idx = 0;
 });
 FastMoneySM.addStartState("fm_start", {
   begin: 'fm_round',
@@ -235,19 +236,20 @@ FastMoneySM.addState('fm_round', {
       console.log(FMAnswers.find({}).fetch());
 
       this.firstPlayerAnswers = answers;
-      return "fm_reveal_answers";
+    } else {
+      this.secondPlayerAnswers = answers;
     }
-    this.secondPlayerAnswers = answers;
-    return "show_playerone_answers";
+
+    return "fm_reveal_answers";
   },
 });
 FastMoneySM.addState('fm_reveal_answers', {
   revealNext: function () {
-    const ans = (this.secondPlayerAnswers || this.firstPlayerAnswers)[this.revealIdx % 5];
+    const ans = (this.secondPlayerAnswers || this.firstPlayerAnswers)[this.fm_reveal_idx % 5];
     console.log("Emitting fm_reveal");
-    Events.emit("fm_reveal", this.revealIdx, ans);
-    this.revealIdx++;
-    if (this.revealIdx != 5 && this.revealIdx < 10) {
+    Events.emit("fm_reveal", this.fm_reveal_idx, ans);
+    this.fm_reveal_idx++;
+    if (this.fm_reveal_idx != 5 && this.fm_reveal_idx < 10) {
       return 'fm_reveal_answers';
     }
 
@@ -261,8 +263,7 @@ FastMoneySM.addState('hide_playerone_answers', {
   hide: function () {
     Answers.update({_id: {$lt: "a5"}}, {$set: {answer: "", score: 0}}, { multi: true});
 
-
-    return 'fm_start';
+    return 'show_playerone_answers';
   },
 });
 FastMoneySM.addState('show_playerone_answers', {
@@ -272,7 +273,7 @@ FastMoneySM.addState('show_playerone_answers', {
     }
 
 
-    return 'fm_reveal_answers';
+    return 'fm_start';
   },
 });
 FastMoneySM.addEndState('fm_end');
