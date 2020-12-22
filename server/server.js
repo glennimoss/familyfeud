@@ -31,7 +31,11 @@ for (const [setname, qset] of Object.entries(qsets)) {
   questionsets[setname] = [];
   const qentries = Object.entries(qset);
   for (const [question, answers] of qentries) {
-    const q = { question, factor: magicfactor(questionsets[setname].length + 1, qentries.length), answers: []}
+    let factor = 1
+    if (setname.search('Fast Money') != 0) {
+      factor = magicfactor(questionsets[setname].length + 1, qentries.length)
+    }
+    const q = { question, factor, answers: []}
     for (const [answer, score] of Object.entries(answers)) {
       q.answers.push({answer, score});
     }
