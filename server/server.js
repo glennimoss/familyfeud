@@ -26,7 +26,7 @@ function magicfactor (n, m) {
 
 //const qsets = yaml.safeLoad(Assets.getText("wynn_youth_qs.yaml"));
 //const qsets = yaml.safeLoad(Assets.getText("canadian_questions.yaml"));
-const qsets = yaml.safeLoad(Assets.getText("christmas_questions.yaml"));
+const qsets = yaml.safeLoad(Assets.getText("edwards_christmas.yaml"));
 for (const [setname, qset] of Object.entries(qsets)) {
   questionsets[setname] = [];
   const qentries = Object.entries(qset);
